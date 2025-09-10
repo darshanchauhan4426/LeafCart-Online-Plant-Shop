@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order Confirmed{% endblock %}
+
+{% block main %}
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
+        <h2>Thank You!</h2>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Order Confirmation</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container section-padding-100">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8 text-center">
+            <div class="order-confirmation-area">
+                <i class="fa fa-check-circle fa-5x text-success mb-4"></i>
+                <h2>Thank You For Your Order!</h2>
+                <p>Your order has been placed successfully. An email confirmation has been sent to you.</p>
+                <p class="font-weight-bold">Your Order Number is: #{{ order.id }}</p>
+
+                <div class="card mt-5">
+                    <div class="card-header">
+                        <h5>Order Summary</h5>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        {% for item in order.items.all %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ item.quantity }} x {{ item.product.name }}
+                            <span>₹{{ item.get_total|floatformat:2 }}</span>
+                        </li>
+                        {% endfor %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center font-weight-bold">
+                            Total
+                            <span>₹{{ order.total_price|floatformat:2 }}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="{% url 'shop' %}" class="btn alazea-btn mt-4">Continue Shopping</a>
+                <a href="{% url 'profile_view' %}" class="btn alazea-btn btn-2 mt-4">View Order History</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

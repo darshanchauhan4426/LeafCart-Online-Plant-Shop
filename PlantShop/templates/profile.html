@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block main %}
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
+        <h2>My Profile</h2>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Profile</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container section-padding-100">
+    <div class="row">
+        <div class="col-12 col-lg-4">
+            <div class="checkout_details_area clearfix mb-50">
+                <h5 class="mb-4">My Details</h5>
+                <form action="#" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="full_name">Full Name</label>
+                        <input type="text" class="form-control" name="full_name" value="{{ user.full_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" class="form-control" name="email" value="{{ user.email }}" readonly>
+                        <small class="form-text text-muted">Email cannot be changed.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" class="form-control" name="phone" value="{{ user.phone }}" required>
+                    </div>
+                    <button type="submit" class="btn alazea-btn btn-2 w-100">Update Details</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-8">
+            <h5 class="mb-4">My Order History</h5>
+            <div class="cart-table clearfix">
+                {% if orders %}
+                <table class="table table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.created_at|date:"d M Y" }}</td>
+                            <td>₹{{ order.total_price|floatformat:2 }}</td>
+                            <td><span class="badge badge-success">{{ order.status }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p>You have not placed any orders yet.</p>
+                <a href="{% url 'shop' %}" class="btn alazea-btn">Shop Now</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

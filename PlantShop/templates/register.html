@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Register | Plant Shop{% endblock %}
+
+{% block main %}
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center"
+         style="background-image: url('{% static "img/bg-img/24.jpg" %}');">
+        <h2>REGISTER</h2>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Register</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="contact-area section-padding-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="contact-form">
+                    <h5 class="mb-50 text-center">Create an Account</h5>
+
+                    <form action="{% url 'register_view' %}" method="post">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="full_name">Full Name</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Choose a secure password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+                        </div>
+
+                        <button type="submit" class="btn alazea-btn btn-2 w-100 mt-15">Register</button>
+                    </form>
+
+                    <p class="mt-4 text-center">
+                        Already have an account? <a href="{% url 'login_view' %}">Login here</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

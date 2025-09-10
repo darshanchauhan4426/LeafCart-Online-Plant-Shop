@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ product.name }} | Shop Details{% endblock %}
+
+{% block main %}
+
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
+        <h2>Shop Details</h2>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'shop' %}">Shop</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<section class="single_product_details_area mb-50">
+    <div class="produts-details--content mb-50">
+        <div class="container">
+            <div class="row justify-content-between">
+
+                <div class="col-12 col-md-6 col-lg-5">
+                    <div class="single_product_thumb">
+                        {% if product.image %}
+                            <img class="d-block w-100" src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <img class="d-block w-100" src="{% static 'img/no-image.png' %}" alt="No Image Available">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <div class="single_product_desc">
+                        <h4 class="title">{{ product.name }}</h4>
+                        <h4 class="price">₹{{ product.price|floatformat:2 }}</h4>
+                        <div class="short_overview">
+                            <p>{{ product.description|linebreaks }}</p>
+                        </div>
+
+                        <div class="cart--area d-flex flex-wrap align-items-center">
+                            <form class="cart clearfix d-flex align-items-center" method="post" action="{% url 'add_to_cart' product.id %}">
+                                {% csrf_token %}
+                                <div class="quantity">
+                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN(qty) && qty > 1 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="10" name="quantity" value="1">
+                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN(qty)) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                </div>
+                                <button type="submit" name="addtocart" class="btn alazea-btn ml-15">Add to cart</button>
+                            </form>
+                        </div>
+
+                        <div class="products--meta">
+                            <p><span>Category:</span> {{ product.category.name }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="product_details_tab clearfix">
+                    <ul class="nav nav-tabs" role="tablist" id="product-details-tab">
+                        <li class="nav-item"><a href="#description" class="nav-link active" data-toggle="tab" role="tab">Description</a></li>
+                        <li class="nav-item"><a href="#reviews" class="nav-link" data-toggle="tab" role="tab">Reviews <span class="text-muted">({{ product.reviews.count }})</span></a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane fade show active" id="description">
+                            <div class="description_area">
+                                <p>{{ product.description|linebreaks }}</p>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="reviews">
+                            <div class="reviews_area">
+                                <ul>
+                                    {% for review in product.reviews.all %}
+                                    <li>
+                                        <div class="single_user_review mb-15">
+                                            <div class="review-rating">
+                                                {% for i in "12345" %}
+                                                    <i class="fa fa-star{% if review.rating < i|add:'0' %}-o{% endif %}" aria-hidden="true"></i>
+                                                {% endfor %}
+                                            </div>
+                                            <div class="review-details">
+                                                <p>by <strong>{{ review.user.full_name }}</strong> on <span>{{ review.created_at|date:"d M Y" }}</span></p>
+                                                <p>{{ review.comment|linebreaks }}</p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% empty %}
+                                    <li><p>This product has no reviews yet.</p></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            
+                            {% if user.is_authenticated %}
+                            <div class="submit_a_review_area mt-50">
+                                <h4>Submit A Review</h4>
+                                <form action="{% url 'shop_details' product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <div class="form-group">
+                                        <label for="rating">Rating (1-5)</label>
+                                        <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" value="5" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="comments">Comment</label>
+                                        <textarea class="form-control" id="comments" name="comment" rows="5" placeholder="Write your review here..." required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn alazea-btn">Submit Your Review</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="submit_a_review_area mt-50">
+                                <p>Please <a href="{% url 'login_view' %}?next={{ request.path }}">login to write a review</a>.</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="related-products-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>Related Products</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% for related in related_products %}
+            <div class="col-12 col-sm-6 col-lg-3">
+                <div class="single-product-area mb-100">
+                    <div class="product-img">
+                        <a href="{% url 'shop_details' related.id %}">
+                            {% if related.image %}
+                                <img src="{{ related.image.url }}" alt="{{ related.name }}">
+                            {% else %}
+                                <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
+                            {% endif %}
+                        </a>
+                        <div class="product-meta d-flex">
+                            <a href="#" class="wishlist-btn"><i class="icon_heart_alt"></i></a>
+                            <form action="{% url 'add_to_cart' related.id %}" method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="add-to-cart-btn" style="border: none; background: none; cursor: pointer;">Add to cart</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="product-info mt-15 text-center">
+                        <a href="{% url 'shop_details' related.id %}"><p>{{ related.name }}</p></a>
+                        <h6>₹{{ related.price|floatformat:2 }}</h6>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p class="text-center">No related products found.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

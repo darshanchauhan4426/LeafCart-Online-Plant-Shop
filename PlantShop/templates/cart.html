@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Shopping Cart{% endblock %}
+
+{% block main %}
+
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
+        <h2>Shopping Cart</h2>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Cart</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cart-area section-padding-0-100 clearfix">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <form action="{% url 'update_cart' %}" method="post">
+                    {% csrf_token %}
+                    <div class="cart-table clearfix">
+                        <table class="table table-responsive">
+                            <thead>
+                                <tr>
+                                    <th>Products</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr>
+                                    <td class="cart_product_img">
+                                        <a href="{% url 'shop_details' item.product.id %}">
+                                            {% if item.product.image %}
+                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                                            {% else %}
+                                                <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
+                                            {% endif %}
+                                        </a>
+                                        <h5 class="mt-2">{{ item.product.name }}</h5>
+                                    </td>
+                                    <td class="price" data-price="{{ item.product.price }}">
+                                        <span>₹{{ item.product.price|floatformat:2 }}</span>
+                                    </td>
+                                    <td class="qty">
+                                        <div class="quantity">
+                                            <span class="qty-minus" onclick="updateQuantity('{{ item.id }}', -1)">
+                                                <i class="fa fa-minus" aria-hidden="true"></i>
+                                            </span>
+                                            <input type="number" class="qty-text" id="qty-{{ item.id }}" step="1" min="1" max="99" name="quantity_{{ item.id }}" value="{{ item.quantity }}">
+                                            <span class="qty-plus" onclick="updateQuantity('{{ item.id }}', 1)">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="total_price" id="total-{{ item.id }}">
+                                        <span>₹{{ item.get_total|floatformat:2 }}</span>
+                                    </td>
+                                    <td class="action">
+                                        <a href="{% url 'remove_from_cart' item.id %}"><i class="icon_close"></i></a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <h4>Your cart is empty.</h4>
+                                        <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Continue Shopping</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if cart_items %}
+                    <div class="cart-summary-button d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn alazea-btn">Update Cart</button>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            {% if cart_items %}
+            <div class="col-12 col-lg-6 offset-lg-6">
+                <div class="cart-totals-area mt-70">
+                    <h5 class="title--">Cart Total</h5>
+                    <div class="subtotal d-flex justify-content-between">
+                        <h5>Subtotal</h5>
+                        <h5 id="cart-subtotal">₹{{ cart_total|floatformat:2 }}</h5>
+                    </div>
+                    <div class="shipping d-flex justify-content-between">
+                        <h5>Shipping</h5>
+                        <h5>Free</h5>
+                    </div>
+                    <div class="total d-flex justify-content-between">
+                        <h5>Total</h5>
+                        <h5 id="cart-total">₹{{ cart_total|floatformat:2 }}</h5>
+                    </div>
+                    <div class="checkout-btn">
+                        <a href="{% url 'checkout' %}" class="btn alazea-btn w-100">PROCEED TO CHECKOUT</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateQuantity(itemId, change) {
+        const qtyInput = document.getElementById(`qty-${itemId}`);
+        let currentQty = parseInt(qtyInput.value);
+
+        if (isNaN(currentQty)) currentQty = 1;
+
+        const newQty = currentQty + change;
+
+        if (newQty >= 1) {
+            qtyInput.value = newQty;
+            updateTotals();
+        }
+    }
+
+    function updateTotals() {
+        let subtotal = 0;
+        const cartRows = document.querySelectorAll("tbody tr");
+
+        cartRows.forEach(row => {
+            const priceCell = row.querySelector(".price");
+            const qtyInput = row.querySelector(".qty-text");
+            const totalCell = row.querySelector(".total_price span");
+            
+            // Check if all elements exist to avoid errors on the "empty cart" row
+            if (priceCell && qtyInput && totalCell) {
+                const price = parseFloat(priceCell.dataset.price);
+                const quantity = parseInt(qtyInput.value);
+                const lineTotal = price * quantity;
+                
+                totalCell.textContent = `₹${lineTotal.toFixed(2)}`;
+                subtotal += lineTotal;
+            }
+        });
+
+        document.getElementById("cart-subtotal").textContent = `₹${subtotal.toFixed(2)}`;
+        document.getElementById("cart-total").textContent = `₹${subtotal.toFixed(2)}`;
+    }
+</script>
+
+{% endblock %}
