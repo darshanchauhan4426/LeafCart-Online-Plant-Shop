@@ -9,7 +9,6 @@
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>Shop Details</h2>
     </div>
-
     <div class="container">
         <div class="row">
             <div class="col-12">
@@ -24,32 +23,25 @@
         </div>
     </div>
 </div>
-
-    {% if messages %}
-        <div class="container" style="margin-top: 20px;">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
 <section class="single_product_details_area mb-50">
     <div class="produts-details--content mb-50">
         <div class="container">
             <div class="row justify-content-between">
 
                 <div class="col-12 col-md-6 col-lg-5">
-                    <div class="single_product_thumb">
-                        {% if product.image %}
-                            <img class="d-block w-100" src="{{ product.image.url }}" alt="{{ product.name }}">
-                        {% else %}
-                            <img class="d-block w-100" src="{% static 'img/no-image.png' %}" alt="No Image Available">
-                        {% endif %}
+                    <div class="product-gallery">
+                        <div class="main-image-container">
+                            <img id="main-product-image" 
+                                 src="{% if product_images %}{{ product_images.0.image.url }}{% else %}{% static 'img/no-image.png' %}{% endif %}" 
+                                 alt="Main product image">
+                        </div>
+                        <div class="thumbnail-container d-flex mt-2">
+                            {% for image in product_images %}
+                                <div class="thumbnail-item">
+                                    <img class="thumbnail-image" src="{{ image.image.url }}" alt="Product thumbnail {{ forloop.counter }}">
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
 
@@ -72,7 +64,6 @@
                                 <button type="submit" name="addtocart" class="btn alazea-btn ml-15">Add to cart</button>
                             </form>
                         </div>
-
                         <div class="products--meta">
                             <p><span>Category:</span> {{ product.category.name }}</p>
                         </div>
@@ -81,114 +72,67 @@
             </div>
         </div>
     </div>
+    
+    </section>
+<style>
+    .main-image-container {
+        border: 1px solid #ebebeb;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    #main-product-image {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
+        object-fit: cover;
+    }
+    .thumbnail-container {
+        gap: 10px; /* Space between thumbnails */
+    }
+    .thumbnail-item {
+        width: 80px;
+        height: 80px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity 0.2s ease, border-color 0.2s ease;
+    }
+    .thumbnail-item:hover,
+    .thumbnail-item.active {
+        opacity: 1;
+        border-color: #70c745; /* Your theme's green color */
+    }
+    .thumbnail-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="product_details_tab clearfix">
-                    <ul class="nav nav-tabs" role="tablist" id="product-details-tab">
-                        <li class="nav-item"><a href="#description" class="nav-link active" data-toggle="tab" role="tab">Description</a></li>
-                        <li class="nav-item"><a href="#reviews" class="nav-link" data-toggle="tab" role="tab">Reviews <span class="text-muted">({{ product.reviews.count }})</span></a></li>
-                    </ul>
-                    <div class="tab-content">
-                        <div role="tabpanel" class="tab-pane fade show active" id="description">
-                            <div class="description_area">
-                                <p>{{ product.description|linebreaks }}</p>
-                            </div>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="reviews">
-                            <div class="reviews_area">
-                                <ul>
-                                    {% for review in product.reviews.all %}
-                                    <li>
-                                        <div class="single_user_review mb-15">
-                                            <div class="review-rating">
-                                                {% for i in "12345" %}
-                                                    <i class="fa fa-star{% if review.rating < i|add:'0' %}-o{% endif %}" aria-hidden="true"></i>
-                                                {% endfor %}
-                                            </div>
-                                            <div class="review-details">
-                                                <p>by <strong>{{ review.user.full_name }}</strong> on <span>{{ review.created_at|date:"d M Y" }}</span></p>
-                                                <p>{{ review.comment|linebreaks }}</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    {% empty %}
-                                    <li><p>This product has no reviews yet.</p></li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            
-                            {% if user.is_authenticated %}
-                            <div class="submit_a_review_area mt-50">
-                                <h4>Submit A Review</h4>
-                                <form action="{% url 'shop_details' product.id %}" method="post">
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label for="rating">Rating (1-5)</label>
-                                        <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" value="5" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="comments">Comment</label>
-                                        <textarea class="form-control" id="comments" name="comment" rows="5" placeholder="Write your review here..." required></textarea>
-                                    </div>
-                                    <button type="submit" class="btn alazea-btn">Submit Your Review</button>
-                                </form>
-                            </div>
-                            {% else %}
-                            <div class="submit_a_review_area mt-50">
-                                <p>Please <a href="{% url 'login_view' %}?next={{ request.path }}">login to write a review</a>.</p>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<div class="related-products-area">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="section-heading text-center">
-                    <h2>Related Products</h2>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            {% for related in related_products %}
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="single-product-area mb-100">
-                    <div class="product-img">
-                        <a href="{% url 'shop_details' related.id %}">
-                            {% if related.image %}
-                                <img src="{{ related.image.url }}" alt="{{ related.name }}">
-                            {% else %}
-                                <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
-                            {% endif %}
-                        </a>
-                        <div class="product-meta d-flex">
-                            <a href="#" class="wishlist-btn"><i class="icon_heart_alt"></i></a>
-                            <form action="{% url 'add_to_cart' related.id %}" method="post" style="display: inline;">
-                                {% csrf_token %}
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="add-to-cart-btn" style="border: none; background: none; cursor: pointer;">Add to cart</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="product-info mt-15 text-center">
-                        <a href="{% url 'shop_details' related.id %}"><p>{{ related.name }}</p></a>
-                        <h6>₹{{ related.price|floatformat:2 }}</h6>
-                    </div>
-                </div>
-            </div>
-            {% empty %}
-            <div class="col-12">
-                <p class="text-center">No related products found.</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mainImage = document.getElementById('main-product-image');
+    const thumbnails = document.querySelectorAll('.thumbnail-image');
+    const thumbnailItems = document.querySelectorAll('.thumbnail-item');
+
+    // Set the first thumbnail as active by default
+    if (thumbnailItems.length > 0) {
+        thumbnailItems[0].classList.add('active');
+    }
+
+    thumbnails.forEach((thumbnail, index) => {
+        thumbnail.addEventListener('click', function() {
+            // Change the main image src to the clicked thumbnail's src
+            mainImage.src = this.src;
+
+            // Update the active state for the border
+            thumbnailItems.forEach(item => item.classList.remove('active'));
+            thumbnailItems[index].classList.add('active');
+        });
+    });
+});
+</script>
+
 {% endblock %}

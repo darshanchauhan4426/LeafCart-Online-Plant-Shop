@@ -43,4 +43,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout_view'),
     path('profile_view/', views.profile_view, name='profile_view'),
     path('order/invoice/<int:order_id>/', views.generate_invoice_pdf, name='generate_invoice_pdf'),
+    path('profile/change-password/', views.change_password_view, name='change_password_view'), 
 ]

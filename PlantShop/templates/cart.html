@@ -4,7 +4,6 @@
 {% block title %}Shopping Cart{% endblock %}
 
 {% block main %}
-
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>Shopping Cart</h2>
@@ -23,150 +22,142 @@
     </div>
 </div>
 
-    {% if messages %}
-        <div class="container" style="margin-top: 20px;">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-<div class="cart-area section-padding-0-100 clearfix">
+<div class="cart-area section-padding-100">
     <div class="container">
+        {% if messages %}
         <div class="row">
             <div class="col-12">
-                <form action="{% url 'update_cart' %}" method="post">
-                    {% csrf_token %}
-                    <div class="cart-table clearfix">
-                        <table class="table table-responsive">
-                            <thead>
-                                <tr>
-                                    <th>Products</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for item in cart_items %}
-                                <tr>
-                                    <td class="cart_product_img">
-                                        <a href="{% url 'shop_details' item.product.id %}">
-                                            {% if item.product.image %}
-                                                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
-                                            {% else %}
-                                                <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
-                                            {% endif %}
-                                        </a>
-                                        <h5 class="mt-2">{{ item.product.name }}</h5>
-                                    </td>
-                                    <td class="price" data-price="{{ item.product.price }}">
-                                        <span>₹{{ item.product.price|floatformat:2 }}</span>
-                                    </td>
-                                    <td class="qty">
-                                        <div class="quantity">
-                                            <span class="qty-minus" onclick="updateQuantity('{{ item.id }}', -1)">
-                                                <i class="fa fa-minus" aria-hidden="true"></i>
-                                            </span>
-                                            <input type="number" class="qty-text" id="qty-{{ item.id }}" step="1" min="1" max="99" name="quantity_{{ item.id }}" value="{{ item.quantity }}">
-                                            <span class="qty-plus" onclick="updateQuantity('{{ item.id }}', 1)">
-                                                <i class="fa fa-plus" aria-hidden="true"></i>
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td class="total_price" id="total-{{ item.id }}">
-                                        <span>₹{{ item.get_total|floatformat:2 }}</span>
-                                    </td>
-                                    <td class="action">
-                                        <a href="{% url 'remove_from_cart' item.id %}"><i class="icon_close"></i></a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="5" class="text-center">
-                                        <h4>Your cart is empty.</h4>
-                                        <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Continue Shopping</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </form>
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                {% endfor %}
             </div>
         </div>
+        {% endif %}
 
-        <div class="row">
-            {% if cart_items %}
-            <div class="col-12 col-lg-6 offset-lg-3">
-                <div class="cart-totals-area mt-70">
-                    <h5 class="title--">Cart Total</h5>
-                    <div class="subtotal d-flex justify-content-between">
-                        <h5>Subtotal</h5>
-                        <h5 id="cart-subtotal">₹{{ cart_total|floatformat:2 }}</h5>
+        {% if cart_items %}
+        <form action="{% url 'update_cart' %}" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <div class="cart-items-container">
+                        {% for item in cart_items %}
+                        <div class="cart-item-row d-flex align-items-center">
+                            <div class="product-thumbnail">
+                                <a href="{% url 'shop_details' item.product.id %}">
+                                    {% if item.product.images.all.0 %}
+                                        <img src="{{ item.product.images.all.0.image.url }}" alt="{{ item.product.name }}">
+                                    {% else %}
+                                        <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="product-info">
+                                <a href="{% url 'shop_details' item.product.id %}" class="product-name">{{ item.product.name }}</a>
+                                <p class="product-price" data-price="{{ item.product.price }}">₹{{ item.product.price|floatformat:2 }}</p>
+                            </div>
+                            <div class="quantity-selector">
+                                <input type="number" class="qty-text" step="1" min="1" max="99" name="quantity_{{ item.id }}" value="{{ item.quantity }}" onchange="updateTotals()">
+                            </div>
+                            <div class="total-price">
+                                <span>₹{{ item.get_total|floatformat:2 }}</span>
+                            </div>
+                            <div class="remove-action">
+                                <a href="{% url 'remove_from_cart' item.id %}" class="remove-btn">&times;</a>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
-                    <div class="shipping d-flex justify-content-between">
-                        <h5>Shipping</h5>
-                        <h5>Free</h5>
+                    <div class="update-cart-btn-container">
+                        <button type="submit" class="btn alazea-btn">Update Quantities</button>
                     </div>
-                    <div class="total d-flex justify-content-between">
-                        <h5>Total</h5>
-                        <h5 id="cart-total">₹{{ cart_total|floatformat:2 }}</h5>
-                    </div>
-                    <div class="checkout-btn">
-                        <a href="{% url 'checkout' %}" class="btn alazea-btn w-100">PROCEED TO CHECKOUT</a>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <div class="cart-summary-card">
+                        <h5>Order Summary</h5>
+                        <ul class="summary-list">
+                            <li><span>Subtotal</span> <span id="cart-subtotal">₹{{ cart_total|floatformat:2 }}</span></li>
+                            <li><span>Shipping</span> <span>Free</span></li>
+                            <li class="total"><span>Total</span> <span id="cart-total">₹{{ cart_total|floatformat:2 }}</span></li>
+                        </ul>
+                        <a href="{% url 'checkout' %}" class="btn alazea-btn w-100">Proceed to Checkout</a>
                     </div>
                 </div>
             </div>
-            {% endif %}
+        </form>
+        {% else %}
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="empty-cart-container">
+                    <img src="{% static 'img/core-img/cart.png' %}" alt="Empty Cart" style="max-width: 150px;">
+                    <h4 class="mt-4">Your cart is empty</h4>
+                    <p>Looks like you haven't added anything to your cart yet.</p>
+                    <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Continue Shopping</a>
+                </div>
+            </div>
         </div>
+        {% endif %}
     </div>
 </div>
 
-<script>
-    function updateQuantity(itemId, change) {
-        const qtyInput = document.getElementById(`qty-${itemId}`);
-        let currentQty = parseInt(qtyInput.value);
-
-        if (isNaN(currentQty)) currentQty = 1;
-
-        const newQty = currentQty + change;
-
-        if (newQty >= 1) {
-            qtyInput.value = newQty;
-            updateTotals();
-        }
+<style>
+    .cart-item-row { background: #fff; border: 1px solid #ebebeb; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
+    .product-thumbnail img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; }
+    .product-info { flex-grow: 1; padding-left: 20px; }
+    .product-name { font-weight: 600; color: #2a2a2a; }
+    .product-name:hover { color: #70c745; }
+    .product-price { color: #777; margin-bottom: 0; }
+    .quantity-selector { min-width: 100px; }
+    .quantity-selector .qty-text { width: 60px; text-align: center; border: 1px solid #ccc; border-radius: 5px; padding: 5px; }
+    .total-price { font-weight: 600; min-width: 100px; text-align: right; }
+    .remove-action { padding-left: 20px; }
+    .remove-btn { font-size: 24px; color: #dc3545; text-decoration: none; line-height: 1; }
+    .update-cart-btn-container { text-align: right; margin-top: 20px; }
+    .cart-summary-card { background: #f9f9f9; border: 1px solid #ebebeb; padding: 30px; border-radius: 8px; position: sticky; 
+        /* FIX: Increased top value to clear the header */
+        top: 140px; 
     }
+    .cart-summary-card h5 { margin-bottom: 20px; }
+    .summary-list { list-style: none; padding: 0; margin: 0; }
+    .summary-list li { display: flex; justify-content: space-between; margin-bottom: 15px; }
+    .summary-list li.total { font-weight: bold; font-size: 1.2em; padding-top: 15px; border-top: 1px solid #ddd; }
+</style>
 
+<script>
     function updateTotals() {
         let subtotal = 0;
-        const cartRows = document.querySelectorAll("tbody tr");
+        const cartRows = document.querySelectorAll(".cart-item-row");
 
         cartRows.forEach(row => {
-            const priceCell = row.querySelector(".price");
+            const priceCell = row.querySelector(".product-price");
             const qtyInput = row.querySelector(".qty-text");
-            const totalCell = row.querySelector(".total_price span");
+            const totalCell = row.querySelector(".total-price span");
             
-            // Check if all elements exist to avoid errors on the "empty cart" row
             if (priceCell && qtyInput && totalCell) {
                 const price = parseFloat(priceCell.dataset.price);
                 const quantity = parseInt(qtyInput.value);
-                const lineTotal = price * quantity;
                 
-                totalCell.textContent = `₹${lineTotal.toFixed(2)}`;
-                subtotal += lineTotal;
+                if (!isNaN(price) && !isNaN(quantity)) {
+                    const lineTotal = price * quantity;
+                    totalCell.textContent = `₹${lineTotal.toFixed(2)}`;
+                    subtotal += lineTotal;
+                }
             }
         });
 
         document.getElementById("cart-subtotal").textContent = `₹${subtotal.toFixed(2)}`;
         document.getElementById("cart-total").textContent = `₹${subtotal.toFixed(2)}`;
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const qtyInputs = document.querySelectorAll('.qty-text');
+        qtyInputs.forEach(input => {
+            input.addEventListener('input', updateTotals);
+        });
+    });
 </script>
 
 {% endblock %}

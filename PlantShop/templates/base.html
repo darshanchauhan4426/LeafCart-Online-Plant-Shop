@@ -94,6 +94,7 @@
     
     {% endblock %}
 
+
     <footer class="footer-area bg-img" style="background-image: url({% static 'img/bg-img/3.jpg' %});">
         <div class="main-footer-area">
             <div class="container">
@@ -130,9 +131,13 @@
                             {% for product in bestseller_products %}
                                 <div class="single-best-seller-product d-flex align-items-center">
                                     <div class="product-thumbnail">
-                                        <a href="{% url 'shop_details' product.id %}">
-                                            {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">{% else %}<img src="{% static 'img/no-image.png' %}" alt="No Image">{% endif %}
-                                        </a>
+                                            <a href="{% url 'shop_details' product.id %}">
+                                                {% if product.images.all.0 %}
+                                                    <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}">
+                                                {% else %}
+                                                    <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
+                                                {% endif %}
+                                            </a>
                                     </div>
                                     <div class="product-info">
                                         <a href="{% url 'shop_details' product.id %}">{{ product.name }}</a>

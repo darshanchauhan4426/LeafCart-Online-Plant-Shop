@@ -8,7 +8,9 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
-# In shop/views.py
+from django.contrib.auth import update_session_auth_hash
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
 
 def index(request):
     """
@@ -55,7 +57,6 @@ def contact(request):
     # If the request is GET, just render the empty form
     return render(request, 'contact.html')
 
-# --- Shop & Product Views ---
 def shop(request):
     # ... (Logic to fetch and filter products with pagination) ...
     categories = Category.objects.filter(is_active=True)
@@ -73,16 +74,19 @@ def shop(request):
 def shop_details(request, product_id):
     # ... (Logic to show a single product and its reviews) ...
     product = get_object_or_404(Product, id=product_id)
+    product_images = product.images.all()
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
     if request.method == "POST" and request.user.is_authenticated:
         Review.objects.create(product=product, user=request.user, rating=request.POST.get("rating", 5), comment=request.POST.get("comment"))
         messages.success(request, "Your review has been submitted.")
         return redirect("shop_details", product_id=product.id)
-    context = {"product": product, "related_products": related_products}
+    context = {
+        "product": product,
+        "product_images": product_images,
+        "related_products": related_products,
+    }    
     return render(request, "shop_details.html", context)
 
-
-# --- Cart Views ---
 @login_required(login_url='login_view')
 def cart_view(request):
     # ... (Logic to show cart items and total) ...
@@ -94,34 +98,30 @@ def cart_view(request):
 @login_required(login_url='login_view')
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    
-    # 1. Get the quantity from the form. Defaults to 1 if not provided.
-    #    This works for both the shop page (sends 1) and details page (sends user's choice).
     quantity_from_form = int(request.POST.get('quantity', 1))
 
-    # 2. Get the item, or create it if it doesn't exist.
     cart_item, created = CartItem.objects.get_or_create(
         user=request.user, 
         product=product
     )
 
     if created:
-        # 3. If a NEW item was created, set its quantity to what the form sent.
         cart_item.quantity = quantity_from_form
         messages.success(request, f"'{product.name}' was added to your cart.")
     else:
-        # 4. If the item ALREADY EXISTED, add the new quantity to the existing quantity.
         cart_item.quantity += quantity_from_form
         messages.success(request, f"Quantity of '{product.name}' was updated.")
     
     cart_item.save()
 
-    # This part handles the AJAX response for the interactive shop page
+    # ADD THIS CHECK for interactive (AJAX) requests from the shop page
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # Recalculate the total number of items in the cart
         total_items = sum(item.quantity for item in CartItem.objects.filter(user=request.user))
+        # Send the new count back to the JavaScript
         return JsonResponse({'message': 'Success', 'cart_item_count': total_items})
 
-    # This handles the standard redirect for the details page
+    # For standard form posts (like from the details page), redirect as normal
     return redirect('cart_view')
 
 @login_required(login_url='login_view')
@@ -145,9 +145,6 @@ def update_cart(request):
                     item.delete()
         messages.success(request, "Cart updated.")
     return redirect('cart_view')
-
-
-# In shop/views.py
 
 @login_required(login_url='login_view')
 def checkout(request):
@@ -197,7 +194,6 @@ def order_confirmation_view(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'order_confirmation.html', {'order': order})
 
-# --- Authentication & Profile Views ---
 def login_view(request):
     # ... (Full login logic) ...
     if request.method == 'POST':
@@ -212,18 +208,40 @@ def login_view(request):
     return render(request, 'login.html')
 
 def register_view(request):
-    # ... (Full registration logic) ...
+    if request.user.is_authenticated:
+        return redirect('index')
+
     if request.method == 'POST':
-        # ... validation ...
-        if request.POST.get('password') != request.POST.get('confirm_password'):
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        phone = request.POST.get('phone')
+
+        if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return redirect('register_view')
+        
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "An account with this email already exists.")
+            return redirect('register_view')
+
+        # --- ADD THIS VALIDATION BLOCK ---
         try:
-            user = User.objects.create_user(email=request.POST.get('email'), password=request.POST.get('password'), full_name=request.POST.get('full_name'), phone=request.POST.get('phone'))
-            auth_login(request, user)
-            return redirect('index')
-        except Exception as e:
-            messages.error(request, f"Registration failed: {e}")
+            validate_password(password)
+        except ValidationError as e:
+            # Join all validation error messages into a single message
+            messages.error(request, ". ".join(e.messages))
+            return redirect('register_view')
+        # --- END OF VALIDATION BLOCK ---
+
+        user = User.objects.create_user(
+            email=email, password=password, full_name=full_name, phone=phone
+        )
+        auth_login(request, user)
+        messages.success(request, f"Welcome, {user.full_name}! Your account has been created.")
+        return redirect('index')
+
     return render(request, 'register.html')
 
 def logout_view(request):
@@ -233,8 +251,32 @@ def logout_view(request):
 
 @login_required(login_url='login_view')
 def profile_view(request):
+    if request.method == 'POST':
+        user = request.user
+        password = request.POST.get('password')
+
+        if not user.check_password(password):
+            messages.error(request, 'Incorrect password. Please try again.')
+            # FIX: Redirect back to the #details tab on error
+            return redirect('/profile/#details')
+
+        new_email = request.POST.get('email')
+        if User.objects.filter(email=new_email).exclude(pk=user.pk).exists():
+            messages.error(request, 'An account with this email already exists.')
+            # FIX: Redirect back to the #details tab on error
+            return redirect('/profile/#details')
+
+        user.full_name = request.POST.get('full_name')
+        user.phone = request.POST.get('phone')
+        user.email = new_email
+        user.save()
+        
+        messages.success(request, 'Your profile has been updated successfully!')
+        return redirect('profile_view')
+
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'profile.html', {'orders': orders})
+    context = {'orders': orders}
+    return render(request, 'profile.html', context)
 
 @login_required(login_url='login_view')
 def generate_invoice_pdf(request, order_id):
@@ -256,3 +298,39 @@ def generate_invoice_pdf(request, order_id):
     response['Content-Disposition'] = f'attachment; filename="invoice_#{order.id}.pdf"'
     
     return response
+
+@login_required(login_url='login_view')
+def change_password_view(request):
+    if request.method == 'POST':
+        # ... (get passwords) ...
+        current_password = request.POST.get('current_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if new_password != confirm_password:
+            messages.error(request, "New passwords do not match.")
+            # FIX: Redirect back to the #password tab on error
+            return redirect('/profile_view/#password')
+
+        user = request.user
+        if not user.check_password(current_password):
+            messages.error(request, "Your current password is not correct.")
+            # FIX: Redirect back to the #password tab on error
+            return redirect('/profile_view/#password')
+        
+        try:
+            validate_password(new_password, user=user)
+        except ValidationError as e:
+            messages.error(request, ". ".join(e.messages))
+            # FIX: Redirect back to the #password tab on error
+            return redirect('/profile_view/#password')
+        
+        user.set_password(new_password)
+        user.save()
+        
+        update_session_auth_hash(request, user)
+        
+        messages.success(request, "Your password has been changed successfully.")
+        return redirect('profile_view')
+    
+    return redirect('profile_view')
