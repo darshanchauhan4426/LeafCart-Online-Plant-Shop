@@ -55,6 +55,7 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=10)
     image = models.ImageField(upload_to='Product_Images/', blank=True, null=True)
     is_available = models.BooleanField(default=True)
+    is_bestseller = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

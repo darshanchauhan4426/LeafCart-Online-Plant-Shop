@@ -1,18 +1,22 @@
-# shop/context_processors.py
-
-from .models import CartItem
+# In shop/context_processors.py
+from .models import CartItem, Product # Add Product to the import
 
 def cart_item_count(request):
     """
-    Makes the total quantity of items in the cart available to all templates.
+    Makes the cart item count and bestseller products available to all templates.
     """
-    if not request.user.is_authenticated:
-        return {'cart_item_count': 0}
+    context = {}
     
-    # Get all cart items for the logged-in user
-    cart_items = CartItem.objects.filter(user=request.user)
+    # Calculate cart item count for authenticated users
+    if request.user.is_authenticated:
+        cart_items = CartItem.objects.filter(user=request.user)
+        total_items = sum(item.quantity for item in cart_items)
+        context['cart_item_count'] = total_items
+    else:
+        context['cart_item_count'] = 0
+
+    # Fetch the top 2 bestseller products
+    bestseller_products = Product.objects.filter(is_bestseller=True, is_available=True)[:2]
+    context['bestseller_products'] = bestseller_products
     
-    # Calculate the sum of the 'quantity' field for all items
-    total_items = sum(item.quantity for item in cart_items)
-    
-    return {'cart_item_count': total_items}
+    return context

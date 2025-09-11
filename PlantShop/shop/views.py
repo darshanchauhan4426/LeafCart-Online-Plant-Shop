@@ -8,7 +8,6 @@ from django.http import JsonResponse
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
-
 # In shop/views.py
 
 def index(request):
