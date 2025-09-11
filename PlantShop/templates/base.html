@@ -90,26 +90,14 @@
         </div>
     </header>
 
-    {% if messages %}
-        <div class="container" style="margin-top: 20px;">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    {% block main %}{% endblock %}
+    {% block main %}
+    
+    {% endblock %}
 
     <footer class="footer-area bg-img" style="background-image: url({% static 'img/bg-img/3.jpg' %});">
         <div class="main-footer-area">
             <div class="container">
                 <div class="row">
-
                     <div class="col-12 col-sm-6 col-lg-3">
                         <div class="single-footer-widget">
                             <div class="footer-logo mb-30">
@@ -123,7 +111,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-12 col-sm-6 col-lg-3">
                         <div class="single-footer-widget">
                             <div class="widget-title"><h5>QUICK LINK</h5></div>
@@ -137,7 +124,6 @@
                             </nav>
                         </div>
                     </div>
-
                     <div class="col-12 col-sm-6 col-lg-3">
                         <div class="single-footer-widget">
                             <div class="widget-title"><h5>BEST SELLER</h5></div>
@@ -145,11 +131,7 @@
                                 <div class="single-best-seller-product d-flex align-items-center">
                                     <div class="product-thumbnail">
                                         <a href="{% url 'shop_details' product.id %}">
-                                            {% if product.image %}
-                                                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                                            {% else %}
-                                                <img src="{% static 'img/no-image.png' %}" alt="No Image">
-                                            {% endif %}
+                                            {% if product.image %}<img src="{{ product.image.url }}" alt="{{ product.name }}">{% else %}<img src="{% static 'img/no-image.png' %}" alt="No Image">{% endif %}
                                         </a>
                                     </div>
                                     <div class="product-info">
@@ -162,7 +144,6 @@
                             {% endfor %}
                         </div>
                     </div>
-
                     <div class="col-12 col-sm-6 col-lg-3">
                         <div class="single-footer-widget">
                             <div class="widget-title"><h5>CONTACT</h5></div>
@@ -174,11 +155,9 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-
         <div class="footer-bottom-area">
             <div class="container">
                 <div class="row">
