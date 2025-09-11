@@ -45,19 +45,19 @@
                                 </div>
                                 <div class="col-12 mb-4">
                                     <label for="address">Address *</label>
-                                    <input type="text" class="form-control" id="address" name="address" placeholder="Street Address" value="" required>
+                                    <input type="text" class="form-control" id="address" name="address" placeholder="Street Address" required>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label for="city">Town/City *</label>
-                                    <input type="text" class="form-control" id="city" name="city" value="" required>
+                                    <input type="text" class="form-control" id="city" name="city" required>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label for="state">State *</label>
-                                    <input type="text" class="form-control" id="state" name="state" value="" required>
+                                    <input type="text" class="form-control" id="state" name="state" required>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label for="postcode">Postcode/Zip *</label>
-                                    <input type="text" class="form-control" id="postcode" name="postcode" value="" required>
+                                    <input type="text" class="form-control" id="postcode" name="postcode" required>
                                 </div>
                                 <div class="col-md-6 mb-4">
                                     <label for="country">Country *</label>
@@ -74,7 +74,7 @@
 
                 <div class="col-12 col-lg-4">
                     <div class="checkout-content">
-                        <h5 class="title--">Your Order</h5>
+                        <h5 class="title--">Your Order Summary</h5>
                         <div class="products">
                             <div class="products-data">
                                 <div class="subtotal d-flex justify-content-between align-items-center">
@@ -92,6 +92,14 @@
                         <div class="subtotal d-flex justify-content-between align-items-center mt-3">
                             <h5>Subtotal</h5>
                             <h5>₹{{ cart_total|floatformat:2 }}</h5>
+                        </div>
+                        <div class="shipping d-flex justify-content-between align-items-center">
+                            <h5>Shipping</h5>
+                            <h5>Free</h5>
+                        </div>
+                        <div class="payment-method d-flex justify-content-between align-items-center">
+                            <h5>Payment Method</h5>
+                            <h5>Cash on Delivery</h5>
                         </div>
                         <div class="order-total d-flex justify-content-between align-items-center">
                             <h5>Order Total</h5>

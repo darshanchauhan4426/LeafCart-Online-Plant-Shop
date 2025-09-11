@@ -5,10 +5,24 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from .models import User, Product, Category, Contact, Review, CartItem, Order, OrderItem
 from django.http import JsonResponse
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
 
-# --- Core & Static Page Views ---
+# In shop/views.py
+
 def index(request):
-    return render(request, 'index.html')
+    """
+    Renders the homepage and fetches the 4 newest products for the
+    'New Arrivals' section.
+    """
+    # Fetch the 4 most recently created, available products
+    new_arrivals = Product.objects.filter(is_available=True).order_by('-created_at')[:4]
+    
+    context = {
+        'new_arrivals': new_arrivals
+    }
+    return render(request, 'index.html', context)
 
 def about(request):
     return render(request, 'about.html')
@@ -78,28 +92,37 @@ def cart_view(request):
     context = {'cart_items': cart_items, 'cart_total': cart_total}
     return render(request, 'cart.html', context)
 
-# In shop/views.py
 @login_required(login_url='login_view')
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     
-    # Use get_or_create to handle both new and existing items
-    cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+    # 1. Get the quantity from the form. Defaults to 1 if not provided.
+    #    This works for both the shop page (sends 1) and details page (sends user's choice).
+    quantity_from_form = int(request.POST.get('quantity', 1))
 
-    # If the item wasn't newly created, just increase its quantity
-    if not created:
-        cart_item.quantity += 1
+    # 2. Get the item, or create it if it doesn't exist.
+    cart_item, created = CartItem.objects.get_or_create(
+        user=request.user, 
+        product=product
+    )
+
+    if created:
+        # 3. If a NEW item was created, set its quantity to what the form sent.
+        cart_item.quantity = quantity_from_form
+        messages.success(request, f"'{product.name}' was added to your cart.")
+    else:
+        # 4. If the item ALREADY EXISTED, add the new quantity to the existing quantity.
+        cart_item.quantity += quantity_from_form
+        messages.success(request, f"Quantity of '{product.name}' was updated.")
     
     cart_item.save()
 
-    # Check if the request is an AJAX request
+    # This part handles the AJAX response for the interactive shop page
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        # Recalculate the total cart count
         total_items = sum(item.quantity for item in CartItem.objects.filter(user=request.user))
-        return JsonResponse({'message': 'Item added successfully!', 'cart_item_count': total_items})
+        return JsonResponse({'message': 'Success', 'cart_item_count': total_items})
 
-    # For non-AJAX requests, redirect as before
-    messages.success(request, f"'{product.name}' was added to your cart.")
+    # This handles the standard redirect for the details page
     return redirect('cart_view')
 
 @login_required(login_url='login_view')
@@ -124,14 +147,22 @@ def update_cart(request):
         messages.success(request, "Cart updated.")
     return redirect('cart_view')
 
-# --- Checkout & Order Views ---
+
+# In shop/views.py
+
 @login_required(login_url='login_view')
 def checkout(request):
-    # ... (Logic to display checkout form and process the order) ...
     cart_items = CartItem.objects.filter(user=request.user)
-    if not cart_items:
-        return redirect('shop')
     cart_total = sum(item.get_total for item in cart_items)
+
+    if not cart_items:
+        messages.warning(request, "Your cart is empty.")
+        return redirect('shop')
+
+    # --- FIX: Define shipping and calculate total price correctly ---
+    shipping_cost = 0  # Set shipping to be free
+    total_price = cart_total + shipping_cost
+    # --- END FIX ---
 
     if request.method == 'POST':
         new_order = Order.objects.create(
@@ -143,11 +174,20 @@ def checkout(request):
             city=request.POST.get('city'),
             state=request.POST.get('state'),
             postcode=request.POST.get('postcode'),
-            total_price=cart_total
+            total_price=total_price,         # Use the corrected total
+            shipping_cost=shipping_cost      # Save the shipping cost
         )
         for item in cart_items:
-            OrderItem.objects.create(order=new_order, product=item.product, quantity=item.quantity, price=item.product.price)
+            OrderItem.objects.create(
+                order=new_order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.product.price
+            )
+        
         cart_items.delete()
+        
+        messages.success(request, "Your order has been placed successfully!")
         return redirect('order_confirmation', order_id=new_order.id)
 
     context = {'cart_items': cart_items, 'cart_total': cart_total}
@@ -196,3 +236,24 @@ def logout_view(request):
 def profile_view(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'profile.html', {'orders': orders})
+
+@login_required(login_url='login_view')
+def generate_invoice_pdf(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    # The context and template remain the same as before
+    template_path = 'invoice.html'
+    context = {'order': order}
+
+    # Render the HTML template
+    html_string = render_to_string(template_path, context)
+    
+    # Generate the PDF file using WeasyPrint
+    # base_url is important for WeasyPrint to find static files like fonts
+    pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+
+    # Create the HTTP response to send the PDF back to the browser
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="invoice_#{order.id}.pdf"'
+    
+    return response

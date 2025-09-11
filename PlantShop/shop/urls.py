@@ -42,4 +42,5 @@ urlpatterns = [
     path('register/', views.register_view, name='register_view'),
     path('logout/', views.logout_view, name='logout_view'),
     path('profile_view/', views.profile_view, name='profile_view'),
+    path('order/invoice/<int:order_id>/', views.generate_invoice_pdf, name='generate_invoice_pdf'),
 ]

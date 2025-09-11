@@ -26,7 +26,7 @@
         <div class="col-12 col-lg-4">
             <div class="checkout_details_area clearfix mb-50">
                 <h5 class="mb-4">My Details</h5>
-                <form action="#" method="post">
+                <form action="{% url 'profile_view' %}" method="post">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="full_name">Full Name</label>
@@ -50,13 +50,14 @@
             <h5 class="mb-4">My Order History</h5>
             <div class="cart-table clearfix">
                 {% if orders %}
-                <table class="table table-responsive">
+                <table class="table table-responsive-sm">
                     <thead>
                         <tr>
                             <th>Order ID</th>
                             <th>Date</th>
                             <th>Total</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,7 +66,26 @@
                             <td>#{{ order.id }}</td>
                             <td>{{ order.created_at|date:"d M Y" }}</td>
                             <td>₹{{ order.total_price|floatformat:2 }}</td>
-                            <td><span class="badge badge-success">{{ order.status }}</span></td>
+                            <td>
+                                {% if order.status == 'Pending' %}
+                                    <span class="badge badge-warning">{{ order.status }}</span>
+                                {% elif order.status == 'Shipped' %}
+                                    <span class="badge badge-info">{{ order.status }}</span>
+                                {% elif order.status == 'Delivered' %}
+                                    <span class="badge badge-success">{{ order.status }}</span>
+                                {% elif order.status == 'Cancelled' %}
+                                    <span class="badge badge-secondary">{{ order.status }}</span>
+                                {% else %}
+                                    <span class="badge badge-light">{{ order.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if order.status == 'Delivered' %}
+                                    <a href="{% url 'generate_invoice_pdf' order.id %}" class="btn btn-sm btn-outline-success">
+                                        Download Invoice
+                                    </a>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

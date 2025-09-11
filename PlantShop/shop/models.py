@@ -89,11 +89,17 @@ class Order(models.Model):
     state = models.CharField(max_length=100)
     postcode = models.CharField(max_length=20)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
+    payment_method = models.CharField(max_length=50, default='Cash on Delivery')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Order #{self.id}"
+    
+    @property
+    def subtotal(self):
+        return self.total_price - self.shipping_cost
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
@@ -104,9 +110,6 @@ class OrderItem(models.Model):
     @property
     def get_total(self):
         return self.price * self.quantity
-    
-    def __str__(self):
-        return self.order
 
 class Review(models.Model):
     product = models.ForeignKey(Product, related_name="reviews", on_delete=models.CASCADE)

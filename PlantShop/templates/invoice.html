@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ order.id }}</title>
+    <style>
+        @font-face {
+            font-family: 'Noto Sans';
+            /* FIX: Added quotes around the font path variable */
+            src: url("{{ font_regular_path }}");
+            font-weight: normal;
+        }
+        @font-face {
+            font-family: 'Noto Sans';
+            /* FIX: Added quotes around the font path variable */
+            src: url("{{ font_bold_path }}");
+            font-weight: bold;
+        }
+
+        @page { size: A4; margin: 1.5cm; }
+        
+        body { font-family: 'Noto Sans', sans-serif; color: #333; font-size: 12px; }
+
+        /* (The rest of the CSS is the same) */
+        .container { width: 90%; margin: 0 auto; }
+        .header-container { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+        .shop-info h1 { font-size: 24px; margin: 0; color: #70c745; font-weight: bold; }
+        .shop-info p { margin: 2px 0; }
+        .invoice-info { text-align: right; }
+        .invoice-info h2 { font-size: 20px; margin: 0; font-weight: bold; }
+        .invoice-info p { margin: 2px 0; }
+        .customer-info { margin-bottom: 30px; padding: 15px; background-color: #f9f9f9; border-radius: 5px; }
+        .items-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .items-table th, .items-table td { border-bottom: 1px solid #ddd; padding: 12px 15px; text-align: left; }
+        .items-table thead th { background-color: #f2f2f2; font-weight: bold; }
+        .items-table .text-right { text-align: right; }
+        .totals { float: right; width: 40%; }
+        .totals table { width: 100%; }
+        .totals td { padding: 8px; }
+        .totals .label { font-weight: bold; }
+        .totals .grand-total { border-top: 2px solid #333; font-weight: bold; font-size: 1.2em; }
+        .footer { position: fixed; bottom: -1cm; left: 0; right: 0; text-align: center; font-size: 10px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="footer">
+        <p>Thank you for your order! | Plant Shop | support@myshop.com</p>
+    </div>
+
+    <div class="header-container">
+        <div class="shop-info"><h1>Plant Shop</h1><p>123 Plant Lane, Mumbai, India</p><p>support@myshop.com</p></div>
+        <div class="invoice-info"><h2>INVOICE</h2><p><strong>Invoice #:</strong> {{ order.id }}</p><p><strong>Date:</strong> {{ order.created_at|date:"F d, Y" }}</p></div>
+    </div>
+
+    <div class="customer-info"><strong>Bill To:</strong><br>{{ order.full_name }}<br>{{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.postcode }}<br>{{ order.email }}</div>
+
+    <table class="items-table">
+        <thead><tr><th>Item Description</th><th class="text-right">Quantity</th><th class="text-right">Unit Price</th><th class="text-right">Total</th></tr></thead>
+        <tbody>{% for item in order.items.all %}<tr><td>{{ item.product.name }}</td><td class="text-right">{{ item.quantity }}</td><td class="text-right">₹{{ item.price|floatformat:2 }}</td><td class="text-right">₹{{ item.get_total|floatformat:2 }}</td></tr>{% endfor %}</tbody>
+    </table>
+
+    <div class="totals">
+        <table>
+            <tr><td class="label">Subtotal:</td><td class="text-right">₹{{ order.subtotal|floatformat:2 }}</td></tr>
+            <tr><td class="label">Shipping:</td><td class="text-right">₹{{ order.shipping_cost|floatformat:2 }}</td></tr>
+            <tr class="grand-total"><td class="label">Total:</td><td class="text-right">₹{{ order.total_price|floatformat:2 }}</td></tr>
+        </table>
+    </div>
+</body>
+</html>
