@@ -28,27 +28,22 @@
             
             <div class="col-12 col-md-4 col-lg-3">
                 <div class="shop-sidebar-area">
-                    <form id="categoryFilterForm" action="{% url 'shop' %}" method="get">
+                    <form id="filterForm" action="{% url 'shop' %}" method="get">
+                        {% if search_query %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                        {% endif %}
                         <div class="shop-widget catagory mb-50">
                             <h4 class="widget-title">Categories</h4>
                             <div class="widget-desc">
                                 {% for category in categories %}
                                 <div class="custom-control custom-checkbox d-flex align-items-center mb-2">
-                                    <input type="checkbox"
-                                           name="categories"
-                                           value="{{ category.id }}"
-                                           class="custom-control-input"
-                                           id="categoryCheck{{ forloop.counter }}"
-                                           onchange="this.form.submit();"
-                                           {% if category.id in selected_categories %}checked{% endif %}>
-                                    <label class="custom-control-label" for="categoryCheck{{ forloop.counter }}">
-                                        {{ category.name }}
-                                    </label>
+                                    <input type="checkbox" name="categories" value="{{ category.id }}" class="custom-control-input" id="categoryCheck{{ forloop.counter }}" onchange="this.form.submit();" {% if category.id in selected_categories %}checked{% endif %}>
+                                    <label class="custom-control-label" for="categoryCheck{{ forloop.counter }}">{{ category.name }}</label>
                                 </div>
                                 {% endfor %}
                             </div>
                             {% if selected_categories %}
-                                <a href="{% url 'shop' %}" class="btn btn-sm btn-outline-secondary mt-2">Clear Filters</a>
+                                <a href="{% url 'shop' %}{% if search_query %}?search={{ search_query }}{% endif %}" class="btn btn-sm btn-outline-secondary mt-2">Clear Filters</a>
                             {% endif %}
                         </div>
                     </form>
@@ -58,49 +53,62 @@
             <div class="col-12 col-md-8 col-lg-9">
                 <div class="shop-products-area">
                     <div class="row">
-                        {% csrf_token %}
+                        {% if search_query %}
+                        <div class="col-12"><h4 class="mb-4">Search Results for: "{{ search_query }}"</h4></div>
+                        {% endif %}
 
-                        {% if page_obj %}
-                            {% for product in page_obj %}
-                            <div class="col-12 col-sm-6 col-lg-4">
-                                <div class="single-product-area mb-50">
-                                    <div class="product-card">
-                                        <div class="product-image-container">
-                                            <a href="{% url 'shop_details' product.id %}">
-                                                {% if product.images.all.0 %}
-                                                    <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}">
-                                                {% else %}
-                                                    <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
-                                                {% endif %}
-                                            </a>
+                        {% for product in page_obj %}
+                        <div class="col-12 col-sm-6 col-lg-4">
+                            <div class="single-product-area mb-50">
+                                <div class="product-card">
+                                    <div class="product-image-container">
+                                        <a href="{% url 'shop_details' product.id %}">
+                                            {% if product.images.all.0 %}
+                                                <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}">
+                                            {% else %}
+                                                <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                    <div class="product-card-body">
+                                        <a href="{% url 'shop_details' product.id %}" class="product-name"><h5>{{ product.name }}</h5></a>
+                                        <div class="product-rating mb-2">
+                                            {% for i in "12345" %}<i class="fa fa-star{% if product.average_rating < i|add:'0' %}-o{% endif %}" aria-hidden="true"></i>{% endfor %}
+                                            <span class="review-count">({{ product.review_count }})</span>
                                         </div>
-                                        <div class="product-card-body">
-                                            <a href="{% url 'shop_details' product.id %}" class="product-name">
-                                                <h5>{{ product.name }}</h5>
-                                            </a>
-                                            <p class="product-price">₹{{ product.price|floatformat:2 }}</p>
-                                            <button class="btn alazea-btn btn-sm w-100 ajax-add-to-cart" data-product-id="{{ product.id }}">
-                                                <i class="fa fa-shopping-cart"></i> Add to Cart
-                                            </button>
-                                        </div>
+                                        <p class="product-price">₹{{ product.price|floatformat:2 }}</p>
+                                        {% if product.stock > 0 %}
+                                            <form action="{% url 'add_to_cart' product.id %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="quantity" value="1">
+                                                <button type="submit" class="btn alazea-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+                                            </form>
+                                        {% else %}
+                                            <button type="button" class="btn alazea-btn btn-sm w-100" disabled style="background-color: #a0a0a0; border-color: #a0a0a0;">Out of Stock</button>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="col-12">
-                                <p class="text-center">No products found matching your criteria.</p>
-                            </div>
-                        {% endif %}
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center">
+                            {% if search_query %}
+                                <h5>No products found matching your search.</h5>
+                            {% else %}
+                                <h5>No products found in this category.</h5>
+                            {% endif %}
+                            <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Back to Shop</a>
+                        </div>
+                        {% endfor %}
                     </div>
 
                     {% if page_obj.has_other_pages %}
                         <div class="d-flex justify-content-center">
                             <nav aria-label="Page navigation">
                                 <ul class="pagination">
-                                    {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}">&laquo;</a></li>{% endif %}
-                                    {% for num in page_obj.paginator.page_range %}<li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}">{{ num }}</a></li>{% endfor %}
-                                    {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}">&raquo;</a></li>{% endif %}
+                                    {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}">&laquo;</a></li>{% endif %}
+                                    {% for num in page_obj.paginator.page_range %}<li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}">{{ num }}</a></li>{% endfor %}
+                                    {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}">&raquo;</a></li>{% endif %}
                                 </ul>
                             </nav>
                         </div>
@@ -119,60 +127,9 @@
     .product-card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
     .product-name h5 { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: #2a2a2a; transition: color 0.3s ease; }
     .product-name:hover h5 { color: #70c745; }
+    .product-rating { color: #f5a623; } .review-count { font-size: 0.8rem; color: #777; }
     .product-price { font-size: 1.1rem; font-weight: 700; color: #70c745; margin-bottom: 15px; margin-top: auto; }
     .product-card-body .btn { margin-top: 10px; }
 </style>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const addToCartButtons = document.querySelectorAll('.ajax-add-to-cart');
-    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            
-            const productId = this.dataset.productId;
-            const addToCartUrl = `/cart/add/${productId}/`;
-            const originalButtonContent = this.innerHTML;
-
-            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
-            this.disabled = true;
-
-            fetch(addToCartUrl, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken,
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: 'quantity=1'
-            })
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const cartBadge = document.getElementById('cart-count-badge');
-                if (cartBadge) {
-                    cartBadge.innerText = `(${data.cart_item_count})`;
-                }
-                this.innerHTML = '<i class="fa fa-check"></i> Added!';
-                setTimeout(() => {
-                    this.innerHTML = originalButtonContent;
-                    this.disabled = false;
-                }, 2000);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                this.innerHTML = 'Error!';
-                setTimeout(() => {
-                    this.innerHTML = originalButtonContent;
-                    this.disabled = false;
-                }, 2000);
-            });
-        });
-    });
-});
-</script>
 {% endblock %}

@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from .models import User, Product, Category, Contact, Review, CartItem, Order, OrderItem
+from .models import User, Product, Category, Contact, Review, CartItem, Order, OrderItem, ProductImage
 from django.http import JsonResponse
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -12,6 +12,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.urls import reverse
+from django.db.models import Q
 
 def index(request):
     """
@@ -27,7 +28,17 @@ def index(request):
     return render(request, 'index.html', context)
 
 def about(request):
-    return render(request, 'about.html')
+    """
+    Renders the about page and fetches a random selection of product images
+    for the gallery.
+    """
+    # Fetch 8 random images from your entire product collection
+    all_images = ProductImage.objects.order_by('?')[:8]
+    
+    context = {
+        'plant_images': all_images
+    }
+    return render(request, 'about.html', context)
 
 def contact(request):
     """
@@ -58,17 +69,41 @@ def contact(request):
     # If the request is GET, just render the empty form
     return render(request, 'contact.html')
 
+
 def shop(request):
-    # ... (Logic to fetch and filter products with pagination) ...
+    """
+    Handles displaying the shop page, including category filtering,
+    search functionality, and pagination.
+    """
     categories = Category.objects.filter(is_active=True)
     selected_category_ids = request.GET.getlist("categories")
-    products_list = Product.objects.filter(is_available=True).order_by('-created_at')
+    search_query = request.GET.get('search', None)
+    
+    # FIX: Sort by stock (descending) so items with stock > 0 appear first.
+    products_list = Product.objects.all().order_by('-stock', '-created_at')
+
+    # Filter by search query if it exists
+    if search_query:
+        products_list = products_list.filter(
+            Q(name__icontains=search_query) | 
+            Q(description__icontains=search_query)
+        )
+
+    # Filter by selected categories if any are chosen
     if selected_category_ids:
         products_list = products_list.filter(category_id__in=selected_category_ids)
+
+    # Paginate the results
     paginator = Paginator(products_list, 6)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
-    context = { "categories": categories, "page_obj": page_obj, "selected_categories": [int(c) for c in selected_category_ids if c.isdigit()]}
+
+    context = {
+        "categories": categories,
+        "page_obj": page_obj,
+        "selected_categories": [int(c) for c in selected_category_ids if c.isdigit()],
+        "search_query": search_query,
+    }
     return render(request, "shop.html", context)
 
 
@@ -99,6 +134,11 @@ def cart_view(request):
 @login_required(login_url='login_view')
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+
+    if product.stock <= 0:
+        messages.error(request, f"Sorry, '{product.name}' is out of stock.")
+        return redirect('shop')
+    
     quantity_from_form = int(request.POST.get('quantity', 1))
 
     cart_item, created = CartItem.objects.get_or_create(
@@ -156,12 +196,17 @@ def checkout(request):
         messages.warning(request, "Your cart is empty.")
         return redirect('shop')
 
-    # --- FIX: Define shipping and calculate total price correctly ---
+    # --- Define shipping and calculate total price correctly ---
     shipping_cost = 0  # Set shipping to be free
     total_price = cart_total + shipping_cost
-    # --- END FIX ---
+    # --- END ---
 
     if request.method == 'POST':
+        for item in cart_items:
+            if item.product.stock < item.quantity:
+                messages.error(request, f"Sorry, the quantity you requested for '{item.product.name}' is not available. Only {item.product.stock} left in stock.")
+                return redirect('cart_view')
+            
         new_order = Order.objects.create(
             user=request.user,
             full_name=request.POST.get('full_name'),
@@ -181,6 +226,10 @@ def checkout(request):
                 quantity=item.quantity,
                 price=item.product.price
             )
+
+            product = item.product
+            product.stock -= item.quantity
+            product.save()
         
         cart_items.delete()
         

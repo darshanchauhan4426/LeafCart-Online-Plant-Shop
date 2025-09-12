@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.utils.translation import gettext_lazy as _
+from django.db.models import Avg
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -54,6 +55,31 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True)
     is_bestseller = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+        # ADD THESE TWO PROPERTIES
+    @property
+    def average_rating(self):
+        # Calculate the average rating, return 0 if no reviews
+        return self.reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+
+    @property
+    def review_count(self):
+        return self.reviews.count()
+    
+    @property
+    def rating_breakdown(self):
+        breakdown = {
+            '5_star_percent': 0, '4_star_percent': 0, '3_star_percent': 0, 
+            '2_star_percent': 0, '1_star_percent': 0
+        }
+        total = self.review_count
+        if total > 0:
+            breakdown['5_star_percent'] = (self.reviews.filter(rating=5).count() / total) * 100
+            breakdown['4_star_percent'] = (self.reviews.filter(rating=4).count() / total) * 100
+            breakdown['3_star_percent'] = (self.reviews.filter(rating=3).count() / total) * 100
+            breakdown['2_star_percent'] = (self.reviews.filter(rating=2).count() / total) * 100
+            breakdown['1_star_percent'] = (self.reviews.filter(rating=1).count() / total) * 100
+        return breakdown
 
     def __str__(self):
         return self.name
