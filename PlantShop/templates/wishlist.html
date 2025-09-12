@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}My Wishlist{% endblock %}
+
+{% block main %}
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center"
+         style="background-image: url('{% static "img/bg-img/24.jpg" %}');">
+        <h2>My Wishlist</h2>
+    </div>
+</div>
+
+<section class="shop-page section-padding-100">
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="row">
+            {% if wishlist_items %}
+                {% for item in wishlist_items %}
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="single-product-area mb-50">
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <a href="{% url 'shop_details' item.product.id %}">
+                                    {% if item.product.images.all.0 %}
+                                        <img src="{{ item.product.images.all.0.image.url }}" alt="{{ item.product.name }}">
+                                    {% else %}
+                                        <img src="{% static 'img/no-image.png' %}" alt="No Image">
+                                    {% endif %}
+                                </a>
+                            </div>
+                            <div class="product-card-body">
+                                <a href="{% url 'shop_details' item.product.id %}" class="product-name"><h5>{{ item.product.name }}</h5></a>
+                                <p class="product-price">₹{{ item.product.price|floatformat:2 }}</p>
+                                <a href="{% url 'remove_from_wishlist' item.product.id %}" class="btn btn-outline-danger btn-sm mb-2">Remove</a>
+                                {% if item.product.stock > 0 %}
+                                    <form action="{% url 'add_to_cart' item.product.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn alazea-btn btn-sm w-100">Add to Cart</button>
+                                    </form>
+                                {% else %}
+                                    <button class="btn alazea-btn btn-sm w-100" disabled>Out of Stock</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <h4>Your wishlist is empty.</h4>
+                    <p>Click the heart icon on products to save them for later.</p>
+                    <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Discover Products</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<style>.product-card{...}</style>
+{% endblock %}

@@ -5,6 +5,7 @@
 
 {% block main %}
 
+<!-- ##### Breadcrumb Area Start ##### -->
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>Shop Details</h2>
@@ -23,28 +24,34 @@
         </div>
     </div>
 </div>
+<!-- ##### Breadcrumb Area End ##### -->
+
+<!-- ##### Single Product Details Area Start ##### -->
 <section class="single_product_details_area mb-50">
     <div class="produts-details--content mb-50">
         <div class="container">
             <div class="row justify-content-between">
 
+                <!-- Image Slider with Lightbox -->
                 <div class="col-12 col-md-6 col-lg-5">
-                    <div class="product-gallery">
-                        <div class="main-image-container">
-                            <img id="main-product-image" 
-                                 src="{% if product.images.all.0 %}{{ product.images.all.0.image.url }}{% else %}{% static 'img/no-image.png' %}{% endif %}" 
-                                 alt="Main product image">
-                        </div>
-                        <div class="thumbnail-container d-flex mt-2">
-                            {% for image in product.images.all %}
-                                <div class="thumbnail-item">
-                                    <img class="thumbnail-image" src="{{ image.image.url }}" alt="Product thumbnail {{ forloop.counter }}">
-                                </div>
-                            {% endfor %}
+                    <div class="product-slider-area">
+                        <div id="mainProductSlider" class="product-image-slider owl-carousel">
+                            {% if product.images.all %}
+                                {% for image in product.images.all %}
+                                <a class="main-product-gallery-item" href="{{ image.image.url }}">
+                                    <img src="{{ image.image.url }}" alt="Product image {{ forloop.counter }}">
+                                </a>
+                                {% endfor %}
+                            {% else %}
+                                <a class="main-product-gallery-item" href="{% static 'img/no-image.png' %}">
+                                    <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
 
+                <!-- Main Product Info -->
                 <div class="col-12 col-md-6">
                     <div class="single_product_desc">
                         <h4 class="title">{{ product.name }}</h4>
@@ -54,6 +61,11 @@
                         </div>
                         <h4 class="price">₹{{ product.price|floatformat:2 }}</h4>
                         <div class="short_overview"><p>{{ product.description|linebreaks }}</p></div>
+
+                        <div class="products-meta mt-4"><p><span>Category:</span> {{ product.category.name }}</p></div>
+
+                        
+                        <!-- Actions Area: Add to Cart and Wishlist -->
                         <div class="cart--area d-flex flex-wrap align-items-center">
                              {% if product.stock > 0 %}
                                 <form class="cart clearfix d-flex align-items-center" method="post" action="{% url 'add_to_cart' product.id %}">
@@ -65,17 +77,35 @@
                                     </div>
                                     <button type="submit" name="addtocart" class="btn alazea-btn ml-15">Add to cart</button>
                                 </form>
+
+                                <!-- NEW: Wishlist button moved here -->
+                                <div class="wishlist-btn ml-15">
+                                    {% if user.is_authenticated %}
+                                        <a href="#" class="btn btn-outline-secondary ajax-wishlist-btn {% if is_in_wishlist %}active{% endif %}"
+                                           data-add-url="{% url 'add_to_wishlist' product.id %}"
+                                           data-remove-url="{% url 'remove_from_wishlist' product.id %}">
+                                            <i class="fa fa-heart{% if not is_in_wishlist %}-o{% endif %}"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'login_view' %}?next={{ request.path }}" class="btn btn-outline-secondary">
+                                            <i class="fa fa-heart-o"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
                             {% else %}
                                 <p class="font-weight-bold text-danger">This product is currently out of stock.</p>
                             {% endif %}
                         </div>
-                        <div class="products--meta"><p><span>Category:</span> {{ product.category.name }}</p></div>
+                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<!-- ##### Single Product Details Area End ##### -->
+
+<!-- ##### Customer Reviews Area Start ##### -->
 <section class="customer-reviews-area section-padding-0-100" id="reviews">
     <div class="container">
         <div class="row justify-content-center">
@@ -89,12 +119,9 @@
                         </div>
                     </div>
                     <div class="write-review-btn-area">
-                        <button class="btn alazea-btn" type="button" data-toggle="collapse" data-target="#reviewFormCollapse" aria-expanded="false">
-                            Write a Review
-                        </button>
+                        <button class="btn alazea-btn" type="button" data-toggle="collapse" data-target="#reviewFormCollapse" aria-expanded="false">Write a Review</button>
                     </div>
                 </div>
-
                 <div class="collapse" id="reviewFormCollapse">
                     <div class="submit-review-form-area mt-4 mb-4">
                         {% if user.is_authenticated %}
@@ -109,16 +136,12 @@
                         {% endif %}
                     </div>
                 </div>
-
                 <div class="reviews-list">
                     {% for review in product.reviews.all %}
                     <div class="single-review-item">
                         <div class="reviewer-avatar">{{ review.user.full_name|first|upper }}</div>
                         <div class="review-content">
-                            <div class="review-meta">
-                                <span class="reviewer-name">{{ review.user.full_name }}</span>
-                                <span class="review-date">{{ review.created_at|date:"F d, Y" }}</span>
-                            </div>
+                            <div class="review-meta"><span class="reviewer-name">{{ review.user.full_name }}</span><span class="review-date">{{ review.created_at|date:"F d, Y" }}</span></div>
                             <div class="review-rating">{% for i in "12345" %}<i class="fa fa-star{% if review.rating < i|add:'0' %}-o{% endif %}"></i>{% endfor %}</div>
                             <div class="review-comment"><p>{{ review.comment|linebreaks }}</p></div>
                         </div>
@@ -131,6 +154,9 @@
         </div>
     </div>
 </section>
+<!-- ##### Customer Reviews Area End ##### -->
+
+<!-- ##### Related Product Area Start ##### -->
 <div class="related-products-area">
     <div class="container">
         <div class="row">
@@ -148,10 +174,7 @@
                         </div>
                         <div class="product-card-body">
                             <a href="{% url 'shop_details' related.id %}" class="product-name"><h5>{{ related.name }}</h5></a>
-                            <div class="product-rating mb-2">
-                                {% for i in "12345" %}<i class="fa fa-star{% if related.average_rating < i|add:'0' %}-o{% endif %}"></i>{% endfor %}
-                                <span class="review-count">({{ related.review_count }})</span>
-                            </div>
+                            <div class="product-rating mb-2">{% for i in "12345" %}<i class="fa fa-star{% if related.average_rating < i|add:'0' %}-o{% endif %}"></i>{% endfor %}<span class="review-count"> ({{ related.review_count }})</span></div>
                             <p class="product-price">₹{{ related.price|floatformat:2 }}</p>
                             {% if related.stock > 0 %}
                                 <form action="{% url 'add_to_cart' related.id %}" method="post">
@@ -171,56 +194,19 @@
         </div>
     </div>
 </div>
+<!-- ##### Related Product Area End ##### -->
+
 <style>
-    /* Gallery Styles */
-    .main-image-container{border:1px solid #ebebeb;border-radius:5px;overflow:hidden}#main-product-image{width:100%;height:auto;max-height:500px;object-fit:cover}.thumbnail-container{gap:10px}.thumbnail-item{width:80px;height:80px;border:1px solid #ddd;border-radius:5px;overflow:hidden;cursor:pointer;opacity:.7;transition:opacity .2s ease,border-color .2s ease}.thumbnail-item:hover,.thumbnail-item.active{opacity:1;border-color:#70c745}.thumbnail-image{width:100%;height:100%;object-fit:cover}
-    
-    /* Modern Product Card Styles */
-    .product-card { background: #ffffff; border: 1px solid #ebebeb; border-radius: 8px; overflow: hidden; transition: box-shadow 0.3s ease, transform 0.3s ease; display: flex; flex-direction: column; height: 100%; }
-    .product-card:hover { box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); transform: translateY(-5px); }
-    .product-image-container { height: 220px; overflow: hidden; }
-    .product-image-container img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-    .product-card:hover .product-image-container img { transform: scale(1.05); }
-    .product-card-body { padding: 20px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
-    .product-name h5 { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: #2a2a2a; transition: color 0.3s ease; }
-    .product-name:hover h5 { color: #70c745; }
-    .product-rating { color: #f5a623; } .review-count { font-size: 0.8rem; color: #777; }
-    .product-price { font-size: 1.1rem; font-weight: 700; color: #70c745; margin-bottom: 15px; margin-top: auto; }
-    .product-card-body .btn { margin-top: 10px; }
+    /* Slider & Card Styles */
+    .product-slider-area{position:relative}.product-image-slider .owl-prev,.product-image-slider .owl-next{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;background-color:rgba(255,255,255,.8);color:#2a2a2a;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:20px;transition:all .3s ease;box-shadow:0 2px 10px rgba(0,0,0,.15)}.product-image-slider .owl-prev{left:15px}.product-image-slider .owl-next{right:15px}.product-image-slider .owl-prev:hover,.product-image-slider .owl-next:hover{background-color:#70c745;color:#fff}.product-image-slider .owl-dots{text-align:center;margin-top:15px}.product-image-slider .owl-dot{width:10px;height:10px;background-color:#ddd;border-radius:50%;margin:0 5px;display:inline-block}.product-image-slider .owl-dot.active{background-color:#70c745}
+    .product-card{background:#fff;border:1px solid #ebebeb;border-radius:8px;overflow:hidden;transition:box-shadow .3s ease,transform .3s ease;display:flex;flex-direction:column;height:100%}.product-card:hover{box-shadow:0 8px 25px rgba(0,0,0,.1);transform:translateY(-5px)}.product-image-container{height:220px;overflow:hidden}.product-image-container img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}.product-card:hover .product-image-container img{transform:scale(1.05)}.product-card-body{padding:20px;text-align:center;flex-grow:1;display:flex;flex-direction:column}.product-name h5{font-size:1rem;font-weight:600;margin-bottom:10px;color:#2a2a2a;transition:color .3s ease}.product-name:hover h5{color:#70c745}.product-rating{color:#f5a623}.review-count{font-size:.8rem;color:#777}.product-price{font-size:1.1rem;font-weight:700;color:#70c745;margin-bottom:15px;margin-top:auto}.product-card-body .btn{margin-top:10px}
     
     /* Review Section Styles */
-    .reviews-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ebebeb; padding-bottom: 20px; margin-bottom: 30px; }
-    .reviews-header h2 { margin-bottom: 0; }
-    .avg-rating-summary { display: flex; align-items: center; gap: 10px; color: #777; }
-    .avg-rating-summary .fa-star { color: #f5a623; }
-    .single-review-item { display: flex; padding: 20px 0; border-bottom: 1px solid #f2f2f2; }
-    .single-review-item:last-child { border-bottom: none; }
-    .reviewer-avatar { width: 45px; height: 45px; background-color: #70c745; color: white; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 1.2rem; margin-right: 20px; flex-shrink: 0; }
-    .review-content { flex-grow: 1; }
-    .reviewer-name { font-weight: 600; margin-right: 10px; }
-    .review-date { font-size: 0.85rem; color: #999; }
-    .review-rating { color: #f5a623; margin-top: 5px; }
-    .review-comment { margin-top: 10px; }
-    .interactive-stars { font-size: 1.5rem; color: #ccc; }
-    .interactive-stars i { cursor: pointer; transition: color 0.2s ease; }
-    .interactive-stars i.hover, .interactive-stars i.selected { color: #f5a623; }
+    .reviews-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ebebeb;padding-bottom:20px;margin-bottom:30px}.reviews-header h2{margin-bottom:0}.avg-rating-summary{display:flex;align-items:center;gap:10px;color:#777}.avg-rating-summary .fa-star{color:#f5a623}.single-review-item{display:flex;padding:20px 0;border-bottom:1px solid #f2f2f2}.single-review-item:last-child{border-bottom:none}.reviewer-avatar{width:45px;height:45px;background-color:#70c745;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:700;font-size:1.2rem;margin-right:20px;flex-shrink:0}.review-content{flex-grow:1}.reviewer-name{font-weight:600;margin-right:10px}.review-date{font-size:.85rem;color:#999}.review-rating{color:#f5a623;margin-top:5px}.review-comment{margin-top:10px}.interactive-stars{font-size:1.5rem;color:#ccc}.interactive-stars i{cursor:pointer;transition:color .2s ease}.interactive-stars i.hover,.interactive-stars i.selected{color:#f5a623}
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Image Gallery Logic
-    const mainImage = document.getElementById('main-product-image');
-    const thumbnails = document.querySelectorAll('.thumbnail-image');
-    const thumbnailItems = document.querySelectorAll('.thumbnail-item');
-    if (thumbnailItems.length > 0) { thumbnailItems[0].classList.add('active'); }
-    thumbnails.forEach((thumbnail, index) => {
-        thumbnail.addEventListener('click', function() {
-            mainImage.src = this.src;
-            thumbnailItems.forEach(item => item.classList.remove('active'));
-            thumbnailItems[index].classList.add('active');
-        });
-    });
-
     // Interactive Star Rating Logic
     const stars = document.querySelectorAll('.interactive-stars i');
     const ratingInput = document.getElementById('rating-input');
@@ -242,7 +228,58 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // Owl Carousel Slider & Magnific Popup Logic
+    if ($('.product-image-slider').length) {
+        $('.product-image-slider').owlCarousel({
+            items: 1, loop: true, nav: true,
+            navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+            dots: true, autoplay: false
+        });
+        $('#mainProductSlider').magnificPopup({
+            delegate: 'a.main-product-gallery-item',
+            type: 'image',
+            gallery: { enabled: true }
+        });
+    }
+
+    // AJAX Wishlist Logic
+    const wishlistButtons = document.querySelectorAll('.ajax-wishlist-btn');
+    // CSRF token is available inside the 'add to cart' form
+    const csrfToken = document.querySelector('form.cart [name=csrfmiddlewaretoken]').value; 
+
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            const buttonElement = this;
+            const icon = buttonElement.querySelector('i');
+            const textSpan = buttonElement.querySelector('.wishlist-text');
+            const isWishlisted = buttonElement.classList.contains('active');
+            
+            const url = isWishlisted ? buttonElement.dataset.removeUrl : buttonElement.dataset.addUrl;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken,
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    buttonElement.classList.toggle('active');
+                    const isNowWishlisted = buttonElement.classList.contains('active');
+                    if (icon) { icon.className = isNowWishlisted ? 'fa fa-heart' : 'fa fa-heart-o'; }
+                    if (textSpan) { textSpan.textContent = isNowWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'; }
+                }
+            })
+            .catch(error => console.error('Wishlist Error:', error));
+        });
+    });
 });
 </script>
 
 {% endblock %}
+

@@ -44,4 +44,8 @@ urlpatterns = [
     path('profile_view/', views.profile_view, name='profile_view'),
     path('order/invoice/<int:order_id>/', views.generate_invoice_pdf, name='generate_invoice_pdf'),
     path('profile/change-password/', views.change_password_view, name='change_password_view'), 
+    path('wishlist/', views.view_wishlist, name='view_wishlist'),
+    path('wishlist/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
+    path('wishlist/remove/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
+    path('cart/apply-coupon/', views.apply_coupon, name='apply_coupon'),
 ]

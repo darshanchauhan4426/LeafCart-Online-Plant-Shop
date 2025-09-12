@@ -5,126 +5,130 @@
 
 {% block main %}
 
-    <div class="breadcrumb-area">
-        <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
-            <h2>Checkout</h2>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Checkout</li>
-                        </ol>
-                    </nav>
-                </div>
+<!-- ##### Breadcrumb Area Start ##### -->
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
+        <h2>Checkout</h2>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'cart_view' %}">Cart</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                    </ol>
+                </nav>
             </div>
         </div>
     </div>
+</div>
+<!-- ##### Breadcrumb Area End ##### -->
 
-    {% if messages %}
-        <div class="container" style="margin-top: 20px;">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <div class="checkout_area mb-100">
-        <div class="container">
-            <div class="row justify-content-between">
-                <div class="col-12 col-lg-7">
-                    <div class="checkout_details_area clearfix">
-                        <h5>Billing Details</h5>
-                        <form action="{% url 'checkout' %}" method="post" id="checkout-form">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col-12 mb-4">
-                                    <label for="full_name">Full Name *</label>
-                                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ request.user.full_name }}" required>
-                                </div>
-                                <div class="col-12 mb-4">
-                                    <label for="email_address">Email Address *</label>
-                                    <input type="email" class="form-control" id="email_address" name="email" value="{{ request.user.email }}" required>
-                                </div>
-                                <div class="col-12 mb-4">
-                                    <label for="phone_number">Phone Number *</label>
-                                    <input type="tel" class="form-control" id="phone_number" name="phone" value="{{ request.user.phone }}" required>
-                                </div>
-                                <div class="col-12 mb-4">
-                                    <label for="address">Address *</label>
-                                    <input type="text" class="form-control" id="address" name="address" placeholder="Street Address" required>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <label for="city">Town/City *</label>
-                                    <input type="text" class="form-control" id="city" name="city" required>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <label for="state">State *</label>
-                                    <input type="text" class="form-control" id="state" name="state" required>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <label for="postcode">Postcode/Zip *</label>
-                                    <input type="text" class="form-control" id="postcode" name="postcode" required>
-                                </div>
-                                <div class="col-md-6 mb-4">
-                                    <label for="country">Country *</label>
-                                    <select class="custom-select d-block w-100" id="country" name="country" required>
-                                        <option value="India" selected>India</option>
-                                        <option value="USA">United States</option>
-                                        <option value="UK">United Kingdom</option>
-                                    </select>
-                                </div>
+<!-- ##### Checkout Area Start ##### -->
+<div class="checkout_area mb-100">
+    <div class="container">
+        <div class="row justify-content-between">
+            <!-- Billing Details Form -->
+            <div class="col-12 col-lg-7">
+                <div class="checkout_details_area clearfix">
+                    <h5>Billing Details</h5>
+                    <form action="{% url 'checkout' %}" method="post" id="checkout-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-12 mb-4">
+                                <label for="full_name">Full Name *</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ request.user.full_name }}" required>
                             </div>
-                        </form>
+                            <div class="col-12 mb-4">
+                                <label for="email_address">Email Address *</label>
+                                <input type="email" class="form-control" id="email_address" name="email" value="{{ request.user.email }}" required>
+                            </div>
+                            <div class="col-12 mb-4">
+                                <label for="phone_number">Phone Number *</label>
+                                <input type="tel" class="form-control" id="phone_number" name="phone" value="{{ request.user.phone }}" required>
+                            </div>
+                            <div class="col-12 mb-4">
+                                <label for="address">Address *</label>
+                                <input type="text" class="form-control" id="address" name="address" placeholder="Street Address" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="city">Town/City *</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="state">State *</label>
+                                <input type="text" class="form-control" id="state" name="state" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="postcode">Postcode/Zip *</label>
+                                <input type="text" class="form-control" id="postcode" name="postcode" required>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="country">Country *</label>
+                                <select class="custom-select d-block w-100" id="country" name="country" required>
+                                    <option value="India" selected>India</option>
+                                    <option value="USA">United States</option>
+                                    <option value="UK">United Kingdom</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="col-12 col-lg-4">
+                <div class="checkout-content">
+                    <h5 class="title--">Your Order Summary</h5>
+                    <div class="products">
+                        <div class="products-data">
+                            <div class="subtotal d-flex justify-content-between align-items-center">
+                                <h6>Products</h6>
+                                <h6>Total</h6>
+                            </div>
+                            {% for item in cart_items %}
+                            <div class="single-products d-flex justify-content-between align-items-center mt-2">
+                                <p>{{ item.quantity }} x {{ item.product.name }}</p>
+                                <h5>₹{{ item.get_total|floatformat:2 }}</h5>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                </div>
+                    <ul class="summary-list">
+                        <li><span>Subtotal</span> <span>₹{{ cart_subtotal|floatformat:2 }}</span></li>
+                        
+                        {% if discount_amount > 0 %}
+                        <li class="text-success">
+                            <span>Discount ({{ coupon_code }})</span>
+                            <span>- ₹{{ discount_amount|floatformat:2 }}</span>
+                        </li>
+                        {% endif %}
 
-                <div class="col-12 col-lg-4">
-                    <div class="checkout-content">
-                        <h5 class="title--">Your Order Summary</h5>
-                        <div class="products">
-                            <div class="products-data">
-                                <div class="subtotal d-flex justify-content-between align-items-center">
-                                    <h6>Products</h6>
-                                    <h6>Total</h6>
-                                </div>
-                                {% for item in cart_items %}
-                                <div class="single-products d-flex justify-content-between align-items-center mt-2">
-                                    <p>{{ item.quantity }} x {{ item.product.name }}</p>
-                                    <h5>₹{{ item.get_total|floatformat:2 }}</h5>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        <div class="subtotal d-flex justify-content-between align-items-center mt-3">
-                            <h5>Subtotal</h5>
-                            <h5>₹{{ cart_total|floatformat:2 }}</h5>
-                        </div>
-                        <div class="shipping d-flex justify-content-between align-items-center">
-                            <h5>Shipping</h5>
-                            <h5>Free</h5>
-                        </div>
-                        <div class="payment-method d-flex justify-content-between align-items-center">
-                            <h5>Payment Method</h5>
-                            <h5>Cash on Delivery</h5>
-                        </div>
-                        <div class="order-total d-flex justify-content-between align-items-center">
-                            <h5>Order Total</h5>
-                            <h5>₹{{ cart_total|floatformat:2 }}</h5>
-                        </div>
-                        <div class="checkout-btn mt-30">
-                            <button type="submit" form="checkout-form" class="btn alazea-btn w-100">Place Order</button>
-                        </div>
+                        <li><span>Shipping</span> <span>Free</span></li>
+                        <li class="total"><span>Total</span> <span>₹{{ final_total|floatformat:2 }}</span></li>
+                    </ul>
+                    <div class="payment-method d-flex justify-content-between align-items-center">
+                        <h5>Payment Method</h5>
+                        <h5>Cash on Delivery</h5>
+                    </div>
+                    <div class="checkout-btn mt-30">
+                        <button type="submit" form="checkout-form" class="btn alazea-btn w-100">Place Order</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    {% endblock %}
+</div>
+<!-- ##### Checkout Area End ##### -->
+
+<style>
+    .summary-list { list-style: none; padding: 20px 0; border-top: 1px solid #ebebeb; margin-top: 20px; }
+    .summary-list li { display: flex; justify-content: space-between; margin-bottom: 15px; }
+    .summary-list li.total { font-weight: bold; font-size: 1.2em; padding-top: 15px; border-top: 1px solid #ddd; }
+    .payment-method { padding-bottom: 20px; border-bottom: 1px solid #ebebeb; }
+</style>
+
+{% endblock %}
+

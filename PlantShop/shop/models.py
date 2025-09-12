@@ -3,6 +3,8 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Avg
+from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
@@ -161,3 +163,27 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        # Ensures a user can only wishlist a product once
+        unique_together = ('user', 'product')
+
+    def __str__(self):
+        return f"{self.product.name} in {self.user.email}'s Wishlist"
+    
+
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percent = models.IntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    is_active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return f"{self.code} ({self.discount_percent}%)"
+    

@@ -1,7 +1,7 @@
 # In shop/admin.py
 
 from django.contrib import admin
-from .models import User, Category, Product, ProductImage, CartItem, Order, OrderItem, Review, Contact
+from .models import User, Category, Product, ProductImage, CartItem, Order, OrderItem, Review, Contact, Wishlist, Coupon
 
 # This allows us to add images directly on the Product admin page
 class ProductImageInline(admin.TabularInline):
@@ -23,6 +23,8 @@ admin.site.register(User)
 admin.site.register(CartItem)
 admin.site.register(Review)
 admin.site.register(Contact)
+admin.site.register(Wishlist)
+admin.site.register(Coupon)
 
 # Register Order and OrderItem if you haven't already
 class OrderItemInline(admin.TabularInline):

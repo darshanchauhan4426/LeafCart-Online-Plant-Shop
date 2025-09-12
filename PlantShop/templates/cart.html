@@ -4,6 +4,8 @@
 {% block title %}Shopping Cart{% endblock %}
 
 {% block main %}
+
+<!-- ##### Breadcrumb Area Start ##### -->
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>Shopping Cart</h2>
@@ -21,6 +23,7 @@
         </div>
     </div>
 </div>
+<!-- ##### Breadcrumb Area End ##### -->
 
 <div class="cart-area section-padding-100">
     <div class="container">
@@ -30,7 +33,9 @@
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                     {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 {% endfor %}
             </div>
@@ -38,10 +43,11 @@
         {% endif %}
 
         {% if cart_items %}
-        <form action="{% url 'update_cart' %}" method="post">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-12 col-lg-8">
+        <div class="row">
+            <!-- Cart Items List -->
+            <div class="col-12 col-lg-8">
+                <form action="{% url 'update_cart' %}" method="post">
+                    {% csrf_token %}
                     <div class="cart-items-container">
                         {% for item in cart_items %}
                         <div class="cart-item-row d-flex align-items-center">
@@ -73,26 +79,46 @@
                     <div class="update-cart-btn-container">
                         <button type="submit" class="btn alazea-btn">Update Quantities</button>
                     </div>
-                </div>
+                </form>
+            </div>
 
-                <div class="col-12 col-lg-4">
-                    <div class="cart-summary-card">
-                        <h5>Order Summary</h5>
-                        <ul class="summary-list">
-                            <li><span>Subtotal</span> <span id="cart-subtotal">₹{{ cart_total|floatformat:2 }}</span></li>
-                            <li><span>Shipping</span> <span>Free</span></li>
-                            <li class="total"><span>Total</span> <span id="cart-total">₹{{ cart_total|floatformat:2 }}</span></li>
-                        </ul>
-                        <a href="{% url 'checkout' %}" class="btn alazea-btn w-100">Proceed to Checkout</a>
+            <!-- Order Summary & Coupon -->
+            <div class="col-12 col-lg-4">
+                <div class="cart-summary-card">
+                    <h5>Order Summary</h5>
+                    <ul class="summary-list">
+                        <li><span>Subtotal</span> <span id="cart-subtotal">₹{{ cart_subtotal|floatformat:2 }}</span></li>
+                        
+                        {% if discount_amount > 0 %}
+                        <li class="text-success">
+                            <span>Discount ({{ coupon_code }}%)</span>
+                            <span>- ₹{{ discount_amount|floatformat:2 }}</span>
+                        </li>
+                        {% endif %}
+
+                        <li><span>Shipping</span> <span>Free</span></li>
+                        <li class="total"><span>Total</span> <span id="cart-total">₹{{ final_total|floatformat:2 }}</span></li>
+                    </ul>
+
+                    <div class="coupon-form mt-4">
+                        <form action="{% url 'apply_coupon' %}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input type="text" class="form-control" name="code" placeholder="Enter coupon code">
+                            </div>
+                            <button type="submit" class="btn alazea-btn btn-sm w-100">Apply Coupon</button>
+                        </form>
                     </div>
+
+                    <a href="{% url 'checkout' %}" class="btn alazea-btn w-100 mt-3">Proceed to Checkout</a>
                 </div>
             </div>
-        </form>
+        </div>
         {% else %}
         <div class="row">
             <div class="col-12 text-center">
                 <div class="empty-cart-container">
-                    <img src="{% static 'img/core-img/cart.png' %}" alt="Empty Cart" style="max-width: 50px;">
+                    <img src="{% static 'img/core-img/cart.png' %}" alt="Empty Cart" style="max-width: 150px;">
                     <h4 class="mt-4">Your cart is empty</h4>
                     <p>Looks like you haven't added anything to your cart yet.</p>
                     <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Continue Shopping</a>
@@ -116,10 +142,7 @@
     .remove-action { padding-left: 20px; }
     .remove-btn { font-size: 24px; color: #dc3545; text-decoration: none; line-height: 1; }
     .update-cart-btn-container { text-align: right; margin-top: 20px; }
-    .cart-summary-card { background: #f9f9f9; border: 1px solid #ebebeb; padding: 30px; border-radius: 8px; position: sticky; 
-        /* FIX: Increased top value to clear the header */
-        top: 140px; 
-    }
+    .cart-summary-card { background: #f9f9f9; border: 1px solid #ebebeb; padding: 30px; border-radius: 8px; position: sticky; top: 140px; }
     .cart-summary-card h5 { margin-bottom: 20px; }
     .summary-list { list-style: none; padding: 0; margin: 0; }
     .summary-list li { display: flex; justify-content: space-between; margin-bottom: 15px; }
@@ -147,9 +170,17 @@
                 }
             }
         });
-
+        
+        // Note: This script only updates the VISUAL total. The actual discount
+        // is calculated on the server when you click 'Update Cart' or apply a new coupon.
         document.getElementById("cart-subtotal").textContent = `₹${subtotal.toFixed(2)}`;
-        document.getElementById("cart-total").textContent = `₹${subtotal.toFixed(2)}`;
+        // This is a rough estimate; the server will have the final say on the total.
+        const discountText = document.querySelector('.text-success span:last-child');
+        let discount = 0;
+        if (discountText) {
+            discount = parseFloat(discountText.textContent.replace('- ₹', ''));
+        }
+        document.getElementById("cart-total").textContent = `₹${(subtotal - discount).toFixed(2)}`;
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -161,3 +192,4 @@
 </script>
 
 {% endblock %}
+
