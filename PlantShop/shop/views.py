@@ -11,6 +11,7 @@ from weasyprint import HTML
 from django.contrib.auth import update_session_auth_hash
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
+from django.urls import reverse
 
 def index(request):
     """
@@ -250,35 +251,6 @@ def logout_view(request):
     return redirect('login_view')
 
 @login_required(login_url='login_view')
-def profile_view(request):
-    if request.method == 'POST':
-        user = request.user
-        password = request.POST.get('password')
-
-        if not user.check_password(password):
-            messages.error(request, 'Incorrect password. Please try again.')
-            # FIX: Redirect back to the #details tab on error
-            return redirect('/profile/#details')
-
-        new_email = request.POST.get('email')
-        if User.objects.filter(email=new_email).exclude(pk=user.pk).exists():
-            messages.error(request, 'An account with this email already exists.')
-            # FIX: Redirect back to the #details tab on error
-            return redirect('/profile/#details')
-
-        user.full_name = request.POST.get('full_name')
-        user.phone = request.POST.get('phone')
-        user.email = new_email
-        user.save()
-        
-        messages.success(request, 'Your profile has been updated successfully!')
-        return redirect('profile_view')
-
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    context = {'orders': orders}
-    return render(request, 'profile.html', context)
-
-@login_required(login_url='login_view')
 def generate_invoice_pdf(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     
@@ -300,30 +272,65 @@ def generate_invoice_pdf(request, order_id):
     return response
 
 @login_required(login_url='login_view')
+def profile_view(request):
+    if request.method == 'POST':
+        user = request.user
+        password = request.POST.get('password')
+
+        # This is where we build the correct redirect URL with the hash
+        redirect_url = f"{reverse('profile_view')}#details"
+
+        if not user.check_password(password):
+            messages.error(request, 'Incorrect password. Please try again.')
+            # FIX: Redirect to the correct URL
+            return redirect(redirect_url)
+
+        new_email = request.POST.get('email')
+        if User.objects.filter(email=new_email).exclude(pk=user.pk).exists():
+            messages.error(request, 'An account with this email already exists.')
+            # FIX: Redirect to the correct URL
+            return redirect(redirect_url)
+
+        user.full_name = request.POST.get('full_name')
+        user.phone = request.POST.get('phone')
+        user.email = new_email
+        user.save()
+        
+        messages.success(request, 'Your profile has been updated successfully!')
+        return redirect('profile_view')
+
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    context = {'orders': orders}
+    return render(request, 'profile.html', context)
+
+
+@login_required(login_url='login_view')
 def change_password_view(request):
     if request.method == 'POST':
-        # ... (get passwords) ...
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
+        
+        # This is where we build the correct redirect URL with the hash
+        redirect_url = f"{reverse('profile_view')}#password"
 
         if new_password != confirm_password:
             messages.error(request, "New passwords do not match.")
-            # FIX: Redirect back to the #password tab on error
-            return redirect('/profile_view/#password')
+            # FIX: Redirect to the correct URL
+            return redirect(redirect_url)
 
         user = request.user
         if not user.check_password(current_password):
             messages.error(request, "Your current password is not correct.")
-            # FIX: Redirect back to the #password tab on error
-            return redirect('/profile_view/#password')
+            # FIX: Redirect to the correct URL
+            return redirect(redirect_url)
         
         try:
             validate_password(new_password, user=user)
         except ValidationError as e:
             messages.error(request, ". ".join(e.messages))
-            # FIX: Redirect back to the #password tab on error
-            return redirect('/profile_view/#password')
+            # FIX: Redirect to the correct URL
+            return redirect(redirect_url)
         
         user.set_password(new_password)
         user.save()
