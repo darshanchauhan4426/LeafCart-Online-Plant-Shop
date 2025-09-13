@@ -1,128 +1,161 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}About Us{% endblock %}
+{% block title %}About Us{% endblock title %}
 
 {% block main %}
+{# Main content for the About Us page starts here. #}
 
-    <div class="breadcrumb-area">
-        <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
-            <h2>About Us</h2>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'index' %}"><i class="fa fa-home"></i> Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">About</li>
-                        </ol>
-                    </nav>
+{# START: Breadcrumb Area #}
+<div class="breadcrumb-area">
+    <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center"
+        style="background-image: url({% static 'img/bg-img/24.jpg' %});">
+        <h2>About Us</h2>
+    </div>
+</div>
+{# END: Breadcrumb Area #}
+
+
+{# START: Our Story Section #}
+<section class="about-us-area section-padding-100-0">
+    <div class="container">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-12 col-lg-5">
+                <div class="section-heading">
+                    <h2>OUR STORY</h2>
+                    <p>A passion for nature, rooted in the heart of the city.</p>
+                </div>
+                <p>Plant Shop started from a simple belief: that everyone deserves to have a little green in their life.
+                    What began as a small balcony garden has blossomed into a curated shop dedicated to bringing the
+                    beauty and benefits of nature indoors.</p>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="about-thumbnail">
+                    <img src="{% static 'img/bg-img/25.jpg' %}" alt="A stylish indoor plant arrangement">
                 </div>
             </div>
         </div>
     </div>
-    <section class="about-us-area section-padding-100-0">
-        <div class="container">
-            <div class="row justify-content-between">
-                <div class="col-12 col-lg-5">
+</section>
+{# END: Our Story Section #}
+
+
+{# START: Our Philosophy Section #}
+<section class="our-philosophy-area section-padding-100-0">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-6">
+                <img src="{% static 'img/bg-img/21.jpg' %}" alt="A person caring for a plant">
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="philosophy-content">
                     <div class="section-heading">
-                        <h2>OUR STORY</h2>
-                        <p>A passion for nature, rooted in the heart of the city.</p>
+                        <h2>Our Philosophy</h2>
                     </div>
-                    <p>Plant Shop started from a simple belief: that everyone deserves to have a little green in their life. What began as a small balcony garden and a passion for sharing cuttings with friends has blossomed into a curated shop dedicated to bringing the beauty and benefits of nature indoors.</p>
-                    <p>We believe that a plant is more than just a decoration; it’s a living piece of art that grows with you. Our mission is to make plant ownership accessible and enjoyable for everyone.</p>
-
-                    <blockquote class="testimonial-quote">
-                        <p>"The best plant shop for healthy, beautiful plants. You can tell they truly care!"</p>
-                        <cite>– A Happy Customer</cite>
-                    </blockquote>
+                    <h5><img src="{% static 'img/core-img/b1.png' %}" alt=""> Quality Guarantee</h5>
+                    <p>We source only the healthiest plants from trusted local growers, ensuring every plant you take
+                        home is ready to thrive.</p>
+                    <h5><img src="{% static 'img/core-img/b2.png' %}" alt=""> Expert Support</h5>
+                    <p>Our team is passionate about plants and is always here to offer friendly advice and support for
+                        your green journey.</p>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+{# END: Our Philosophy Section #}
 
-                <div class="col-12 col-lg-6">
-                    <div class="alazea-benefits-area">
-                        <div class="row">
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b1.png' %}" alt="">
-                                    <h5>Quality Guarantee</h5>
-                                    <p>We source only the healthiest plants from trusted local growers, ensuring every plant you take home is ready to thrive.</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b2.png' %}" alt="">
-                                    <h5>Expert Support</h5>
-                                    <p>Our team is passionate about plants and is always here to offer friendly advice and support for your green journey.</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b3.png' %}" alt="">
-                                    <h5>Sustainable Sourcing</h5>
-                                    <p>We are committed to eco-friendly practices, including using sustainable materials and supporting local nurseries.</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b4.png' %}" alt="">
-                                    <h5>Community Focused</h5>
-                                    <p>We host workshops and events to help build a community of plant lovers who can learn and grow together.</p>
-                                </div>
-                            </div>
+
+{# START: Dynamic Collection Slider #}
+<section class="alazea-portfolio-area section-padding-100-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>OUR COLLECTION</h2>
+                    <p>A glimpse into our greenhouse.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                {# This Owl Carousel is populated with random images from the database via the view. #}
+                <div class="collection-slides owl-carousel">
+                    {% for image in plant_images %}
+                    <a class="gallery-img" href="{{ image.image.url }}">
+                        <div class="single-portfolio-item">
+                            <img src="{{ image.image.url }}" alt="Plant from our collection">
                         </div>
-                    </div>
+                    </a>
+                    {% endfor %}
                 </div>
             </div>
         </div>
-    </section>
-    <section class="our-services-area bg-gray section-padding-100-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="section-heading text-center">
-                        <h2>OUR COLLECTION</h2>
-                        <p>A glimpse into our greenhouse.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                {% for image in plant_images %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <div class="plant-image-item mb-30">
-                        <img src="{{ image.image.url }}" alt="Plant from our collection">
-                    </div>
-                </div>
-                {% empty %}
-                <div class="col-12">
-                    <p class="text-center">Our collection is growing! Check back soon for images.</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </section>
-    <style>
-    .plant-image-item { height: 250px; border-radius: 8px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .plant-image-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-    .plant-image-item img:hover { transform: scale(1.05); }
+    </div>
+</section>
+{# END: Dynamic Collection Slider #}
 
-    /* TESTIMONIAL QUOTE STYLE ADDED */
-    .testimonial-quote {
-        margin-top: 30px;
-        padding-left: 25px;
-        border-left: 4px solid #70c745; /* Theme's green color */
-        font-style: italic;
-        font-size: 1.1rem;
-        color: #555;
-    }
-    .testimonial-quote cite {
-        display: block;
-        margin-top: 10px;
-        font-style: normal;
-        font-weight: 600;
-        font-size: 1rem;
-        color: #2a2a2a;
-    }
+
+{# START: Call to Action Section #}
+<section class="call-to-action-area bg-gray section-padding-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 text-center">
+                <h2>Ready to Find Your Perfect Plant?</h2>
+                <p>Browse our full collection and bring a touch of nature to your space today.</p>
+                <a href="{% url 'shop' %}" class="btn alazea-btn">Shop Now</a>
+            </div>
+        </div>
+    </div>
+</section>
+{# END: Call to Action Section #}
+
+
+{# Custom CSS styles for this page #}
+<style>
+    .about-thumbnail img { border-radius: 8px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+    .our-philosophy-area img { border-radius: 8px; }
+    .our-philosophy-area h5 { font-weight: 600; display: flex; align-items: center; gap: 15px; margin-top: 20px; }
+    .our-philosophy-area h5 img { width: 40px; }
+    .single-portfolio-item { height: 300px; }
+    .single-portfolio-item img { width: 100%; height: 100%; object-fit: cover; }
+    .call-to-action-area h2 { font-size: 2.5rem; }
 </style>
 
-{% endblock %}
+
+{# JavaScript initialization for the Owl Carousel and Magnific Popup gallery #}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($('.collection-slides').length) {
+            // Initialize the on-page slider
+            $('.collection-slides').owlCarousel({
+                items: 5,
+                loop: true,
+                dots: true,
+                autoplay: true,
+                autoplayTimeout: 5000,
+                smartSpeed: 1000,
+                responsive: {
+                    0: { items: 1 },
+                    576: { items: 2 },
+                    768: { items: 3 },
+                    992: { items: 5 }
+                }
+            });
+
+            // Initialize the full-screen lightbox gallery
+            $('.collection-slides').magnificPopup({
+                delegate: 'a.gallery-img',
+                type: 'image',
+                gallery: {
+                    enabled: true
+                }
+            });
+        }
+    });
+</script>
+
+{# Main content for the About Us page ends here. #}
+{% endblock main %}

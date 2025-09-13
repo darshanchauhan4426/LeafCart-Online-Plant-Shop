@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Checkout{% endblock %}
+{% block title %}Checkout{% endblock title %}
 
 {% block main %}
+{# Main content for the Checkout page starts here. #}
 
-<!-- ##### Breadcrumb Area Start ##### -->
+{# START: Breadcrumb Area #}
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>Checkout</h2>
@@ -24,19 +25,24 @@
         </div>
     </div>
 </div>
-<!-- ##### Breadcrumb Area End ##### -->
+{# END: Breadcrumb Area #}
 
-<!-- ##### Checkout Area Start ##### -->
+{# START: Main Checkout Area #}
 <div class="checkout_area mb-100">
     <div class="container">
         <div class="row justify-content-between">
-            <!-- Billing Details Form -->
+
+            {# START: Billing Details Form (Left Column) #}
             <div class="col-12 col-lg-7">
                 <div class="checkout_details_area clearfix">
                     <h5>Billing Details</h5>
+                    {# This form collects all the user's shipping info. #}
+                      {# The id="checkout-form" links it to the "Place Order" button in the other column. #}
                     <form action="{% url 'checkout' %}" method="post" id="checkout-form">
+                        {# Django's security token, required for all POST forms #}
                         {% csrf_token %}
                         <div class="row">
+                            {# Form fields are pre-filled with the logged-in user's data for convenience #}
                             <div class="col-12 mb-4">
                                 <label for="full_name">Full Name *</label>
                                 <input type="text" class="form-control" id="full_name" name="full_name" value="{{ request.user.full_name }}" required>
@@ -77,8 +83,9 @@
                     </form>
                 </div>
             </div>
+            {# END: Billing Details Form #}
 
-            <!-- Order Summary -->
+            {# START: Order Summary (Right Column) #}
             <div class="col-12 col-lg-4">
                 <div class="checkout-content">
                     <h5 class="title--">Your Order Summary</h5>
@@ -88,6 +95,7 @@
                                 <h6>Products</h6>
                                 <h6>Total</h6>
                             </div>
+                            {# Loop through items from the cart to display them in the summary #}
                             {% for item in cart_items %}
                             <div class="single-products d-flex justify-content-between align-items-center mt-2">
                                 <p>{{ item.quantity }} x {{ item.product.name }}</p>
@@ -99,6 +107,7 @@
                     <ul class="summary-list">
                         <li><span>Subtotal</span> <span>₹{{ cart_subtotal|floatformat:2 }}</span></li>
                         
+                        {# This block only appears if a valid coupon has been applied #}
                         {% if discount_amount > 0 %}
                         <li class="text-success">
                             <span>Discount ({{ coupon_code }})</span>
@@ -114,15 +123,16 @@
                         <h5>Cash on Delivery</h5>
                     </div>
                     <div class="checkout-btn mt-30">
+                        {# This button is outside the form, but the form="checkout-form" attribute links them together #}
                         <button type="submit" form="checkout-form" class="btn alazea-btn w-100">Place Order</button>
                     </div>
                 </div>
             </div>
+            {# END: Order Summary #}
         </div>
     </div>
 </div>
-<!-- ##### Checkout Area End ##### -->
-
+{# Page-specific styles for the order summary list #}
 <style>
     .summary-list { list-style: none; padding: 20px 0; border-top: 1px solid #ebebeb; margin-top: 20px; }
     .summary-list li { display: flex; justify-content: space-between; margin-bottom: 15px; }
@@ -130,5 +140,5 @@
     .payment-method { padding-bottom: 20px; border-bottom: 1px solid #ebebeb; }
 </style>
 
-{% endblock %}
-
+{# Main content for the Checkout page ends here. #}
+{% endblock main %}

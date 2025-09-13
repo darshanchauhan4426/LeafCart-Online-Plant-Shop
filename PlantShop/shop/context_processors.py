@@ -1,5 +1,4 @@
-# In shop/context_processors.py
-from .models import CartItem, Product # Add Product to the import
+from .models import CartItem, Product
 
 def cart_item_count(request):
     """

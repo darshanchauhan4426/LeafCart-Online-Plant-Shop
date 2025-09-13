@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Order Confirmed{% endblock %}
+{% block title %}Order Confirmed{% endblock title %}
 
 {% block main %}
+{# Main content for the Order Confirmation page starts here. #}
+
+{# START: Breadcrumb Area #}
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>Thank You!</h2>
@@ -21,21 +24,27 @@
         </div>
     </div>
 </div>
+{# END: Breadcrumb Area #}
 
+{# START: Main Confirmation Section #}
 <div class="container section-padding-100">
     <div class="row justify-content-center">
         <div class="col-12 col-lg-8 text-center">
             <div class="order-confirmation-area">
+                {# Visual confirmation of success #}
                 <i class="fa fa-check-circle fa-5x text-success mb-4"></i>
                 <h2>Thank You For Your Order!</h2>
-                <p>Your order has been placed successfully. An email confirmation has been sent to you.</p>
+                <p>Your order has been placed successfully. A confirmation has been sent to your email.</p>
+                {# The order ID is passed from the view #}
                 <p class="font-weight-bold">Your Order Number is: #{{ order.id }}</p>
 
+                {# START: Order Summary Card #}
                 <div class="card mt-5">
                     <div class="card-header">
                         <h5>Order Summary</h5>
                     </div>
                     <ul class="list-group list-group-flush">
+                        {# Loop through each item associated with the order to display details #}
                         {% for item in order.items.all %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             {{ item.quantity }} x {{ item.product.name }}
@@ -48,11 +57,17 @@
                         </li>
                     </ul>
                 </div>
+                {# END: Order Summary Card #}
 
+                {# Action buttons for the user's next steps #}
                 <a href="{% url 'shop' %}" class="btn alazea-btn mt-4">Continue Shopping</a>
-                <a href="{% url 'profile_view' %}#history" class="btn alazea-btn btn-2 mt-4">View Order History</a>
+                {# The #order-history hash will auto-scroll the user to their order history on the profile page #}
+                <a href="{% url 'profile_view' %}#order-history" class="btn alazea-btn btn-2 mt-4">View Order History</a>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{# END: Main Confirmation Section #}
+
+{# Main content for the Order Confirmation page ends here. #}
+{% endblock main %}

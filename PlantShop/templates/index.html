@@ -2,232 +2,213 @@
 {% load static %}
 
 {% block main %}
+{# Main content for the Homepage starts here. #}
 
-    <section class="hero-area">
-        <div class="hero-post-slides owl-carousel">
-
-            <div class="single-hero-post bg-overlay">
-                <div class="slide-img bg-img" style="background-image:url({% static 'img/bg-img/1.jpg' %});"></div>
-                <div class="container h-100">
-                    <div class="row h-100 align-items-center">
-                        <div class="col-12">
-                            <div class="hero-slides-content text-center">
-                                <h2>Bring Nature Indoors</h2>
-                                <p>Discover our curated collection of beautiful, healthy plants that will bring life and fresh air into your home or office.</p>
-                                <div class="welcome-btn-group">
-                                    <a href="{% url 'shop' %}" class="btn alazea-btn mr-30">GO TO SHOP</a>
-                                    <a href="{% url 'contact' %}" class="btn alazea-btn active">CONTACT US</a>
-                                </div>
+{# START: Hero Area Slider #}
+<section class="hero-area">
+    <div class="hero-post-slides owl-carousel">
+        <div class="single-hero-post bg-overlay">
+            <div class="slide-img bg-img" style="background-image:url({% static 'img/bg-img/1.jpg' %});"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <div class="hero-slides-content text-center">
+                            <h2>Bring Nature Indoors</h2>
+                            <p>Discover our curated collection of beautiful, healthy plants that will bring life and fresh air into your home or office.</p>
+                            <div class="welcome-btn-group">
+                                <a href="{% url 'shop' %}" class="btn alazea-btn mr-30">GO TO SHOP</a>
+                                <a href="{% url 'contact' %}" class="btn alazea-btn active">CONTACT US</a>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="single-hero-post bg-overlay">
-                <div class="slide-img bg-img" style="background-image: url({% static 'img/bg-img/2.jpg' %});"></div>
-                <div class="container h-100">
-                    <div class="row h-100 align-items-center">
-                        <div class="col-12">
-                            <div class="hero-slides-content text-center">
-                                <h2>Expert Care, Thriving Plants</h2>
-                                <p>From rare finds to timeless classics, each plant is nurtured with expert care to ensure it thrives in its new home.</p>
-                                <div class="welcome-btn-group">
-                                    <a href="{% url 'shop' %}" class="btn alazea-btn mr-30">GO TO SHOP</a>
-                                    <a href="{% url 'contact' %}" class="btn alazea-btn active">CONTACT US</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>            
-        </div>
-    </section>
-    <section class="our-services-area bg-gray section-padding-100-0">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="section-heading text-center">
-                        <h2>OUR SERVICES</h2>
-                        <p>We provide the perfect service for you.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row justify-content-between">
-                <div class="col-12 col-lg-5">
-                    <div class="alazea-service-area mb-100">
-
-                        <div class="single-service-area d-flex align-items-center wow fadeInUp" data-wow-delay="100ms">
-                            <div class="service-icon mr-30">
-                                <img src="{% static 'img/core-img/s1.png' %}" alt="">
-                            </div>
-                            <div class="service-content">
-                                <h5>Plant Care</h5>
-                                <p>We offer expert advice and workshops to help you keep your green friends happy and healthy.</p>
-                            </div>
-                        </div>
-
-                        <div class="single-service-area d-flex align-items-center wow fadeInUp" data-wow-delay="300ms">
-                            <div class="service-icon mr-30">
-                                <img src="{% static 'img/core-img/s2.png' %}" alt="">
-                            </div>
-                            <div class="service-content">
-                                <h5>Potting &amp; Repotting</h5>
-                                <p>Choose the perfect pot from our collection, and we'll handle the messy work of potting for you.</p>
-                            </div>
-                        </div>
-
-                        <div class="single-service-area d-flex align-items-center wow fadeInUp" data-wow-delay="500ms">
-                            <div class="service-icon mr-30">
-                                <img src="{% static 'img/core-img/s3.png' %}" alt="">
-                            </div>
-                            <div class="service-content">
-                                <h5>Styling Consultation</h5>
-                                <p>Our team can help you select the right plants to match your space, light, and aesthetic.</p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="col-12 col-lg-6">
-                    <div class="alazea-video-area bg-overlay mb-100">
-                        <img src="{% static 'img/bg-img/23.jpg' %}" alt="">
-                        <a href="http://www.youtube.com/watch?v=7HKoqNJtMTQ" class="video-icon">
-                            <i class="fa fa-play" aria-hidden="true"></i>
-                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-        <section class="new-arrivals-products-area bg-gray section-padding-100">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="section-heading text-center">
-                        <h2>NEW ARRIVALS</h2>
-                        <p>We have the latest products, it must be exciting for you</p>
+        <div class="single-hero-post bg-overlay">
+            <div class="slide-img bg-img" style="background-image: url({% static 'img/bg-img/2.jpg' %});"></div>
+            <div class="container h-100">
+                <div class="row h-100 align-items-center">
+                    <div class="col-12">
+                        <div class="hero-slides-content text-center">
+                            <h2>Expert Care, Thriving Plants</h2>
+                            <p>From rare finds to timeless classics, each plant is nurtured with expert care to ensure it thrives in its new home.</p>
+                            <div class="welcome-btn-group">
+                                <a href="{% url 'shop' %}" class="btn alazea-btn mr-30">GO TO SHOP</a>
+                                <a href="{% url 'contact' %}" class="btn alazea-btn active">CONTACT US</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                {% if new_arrivals %}
-                    {% for product in new_arrivals %}
-                    <div class="col-12 col-sm-6 col-lg-3">
-                        <div class="single-product-area mb-50 wow fadeInUp" data-wow-delay="100ms">
-                            <form action="{% url 'add_to_cart' product.id %}" method="post" id="add-to-cart-form-{{ product.id }}" style="display: none;">
-                                {% csrf_token %}
-                                <input type="hidden" name="quantity" value="1">
-                            </form>
-                            <div class="product-img">
-                                <a href="{% if product.image %}{{ product.image.url }}{% else %}#{% endif %}">
-                                    {% if product.image %}
-                                        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        </div>
+    </div>
+</section>
+{# END: Hero Area Slider #}
+
+
+{# START: Featured Categories Section (NEW DESIGN) #}
+<section class="featured-categories-area section-padding-100-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>SHOP BY CATEGORY</h2>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            {% for category in featured_categories %}
+            <div class="col-12 col-sm-6 col-lg-4">
+                <a href="{% url 'shop' %}?categories={{ category.id }}">
+                    <div class="single-category-card mb-100">
+                        <div class="category-image">
+                            <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                        </div>
+                        <div class="category-title">
+                            <h5>{{ category.name }}</h5>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{# END: Featured Categories Section #}
+
+
+{# START: New Arrivals Section #}
+<section class="new-arrivals-products-area bg-gray section-padding-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>NEW ARRIVALS</h2>
+                    <p>We have the latest products, it must be exciting for you</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% if new_arrivals %}
+                {% for product in new_arrivals %}
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="single-product-area mb-50 wow fadeInUp" data-wow-delay="100ms">
+                        <div class="product-card">
+                            <div class="product-image-container">
+                                <a href="{% url 'shop_details' product.id %}">
+                                    {% if product.images.all.0 %}
+                                        <img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}">
                                     {% else %}
                                         <img src="{% static 'img/no-image.png' %}" alt="No Image Available">
                                     {% endif %}
                                 </a>
-                                <div class="product-meta d-flex">
-                                    <a href="#" class="wishlist-btn"><i class="icon_heart_alt"></i></a>
-                                    <a href="#" class="add-to-cart-btn" onclick="document.getElementById('add-to-cart-form-{{ product.id }}').submit(); return false;">Add to cart</a>
-                                    <a href="{% url 'shop_details' product.id %}" class="compare-btn"><i class="arrow_right"></i></a>
-                                </div>
                             </div>
-                            <div class="product-info mt-15 text-center">
-                                <a href="{% url 'shop_details' product.id %}"><p>{{ product.name }}</p></a>
-                                <h6>₹{{ product.price|floatformat:2 }}</h6>
+                            <div class="product-card-body">
+                                <a href="{% url 'shop_details' product.id %}" class="product-name"><h5>{{ product.name }}</h5></a>
+                                <p class="product-price">₹{{ product.price|floatformat:2 }}</p>
+                                {% if product.stock > 0 %}
+                                    <form action="{% url 'add_to_cart' product.id %}" method="post">
+                                        {# FIX: Removed extra <> brackets #}
+                                        {% csrf_token %}
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn alazea-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+                                    </form>
+                                {% else %}
+                                    <button type="button" class="btn alazea-btn btn-sm w-100" disabled style="background-color:#a0a0a0;border-color:#a0a0a0;">Out of Stock</button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
-                {% else %}
-                    <div class="col-12"><p class="text-center">No new products to display.</p></div>
-                {% endif %}
-                <div class="col-12 text-center">
-                    <a href="{% url 'shop' %}" class="btn alazea-btn">View All</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12"><p class="text-center">No new products to display.</p></div>
+            {% endif %}
+            <div class="col-12 text-center">
+                <a href="{% url 'shop' %}" class="btn alazea-btn">View All Products</a>
+            </div>
+        </div>
+    </div>
+</section>
+{# END: New Arrivals Section #}
+
+
+{# START: Why Choose Us Section #}
+<section class="our-services-area section-padding-100-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section-heading text-center">
+                    <h2>WHY CHOOSE US?</h2>
                 </div>
             </div>
         </div>
-    </section>
-    <section class="about-us-area section-padding-100-0">
-        <div class="container">
-            <div class="row justify-content-between">
-                <div class="col-12 col-lg-5">
-                    <div class="section-heading">
-                        <h2>ABOUT US</h2>
-                        <p>We are leading in the plants service fields.</p>
-                    </div>
-                    <p>Our mission is to reconnect people with nature, one plant at a time. We believe in the power of plants to transform spaces and improve well-being.</p>
-
-                    <div class="alazea-progress-bar mb-50">
-                        <div class="single_progress_bar">
-                            <p>Office plants</p>
-                            <div id="bar1" class="barfiller">
-                                <div class="tipWrap"><span class="tip"></span></div>
-                                <span class="fill" data-percentage="80"></span>
-                            </div>
-                        </div>
-                        <div class="single_progress_bar">
-                            <p>Field manager</p>
-                            <div id="bar2" class="barfiller">
-                                <div class="tipWrap"><span class="tip"></span></div>
-                                <span class="fill" data-percentage="70"></span>
-                            </div>
-                        </div>
-                        <div class="single_progress_bar">
-                            <p>Landscape design</p>
-                            <div id="bar3" class="barfiller">
-                                <div class="tipWrap"><span class="tip"></span></div>
-                                <span class="fill" data-percentage="85"></span>
-                            </div>
-                        </div>
-                        <div class="single_progress_bar">
-                            <p>Garden Care</p>
-                            <div id="bar4" class="barfiller">
-                                <div class="tipWrap"><span class="tip"></span></div>
-                                <span class="fill" data-percentage="65"></span>
-                            </div>
-                        </div>
-                    </div>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="single-benefits-area text-center mb-100">
+                    <img src="{% static 'img/core-img/b1.png' %}" alt="">
+                    <h5>Quality Guarantee</h5>
+                    <p>Every plant is hand-selected and inspected to ensure it meets our high standards of quality.</p>
                 </div>
-
-                <div class="col-12 col-lg-6">
-                    <div class="alazea-benefits-area">
-                        <div class="row">
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b1.png' %}" alt="">
-                                    <h5>Quality Products</h5>
-                                    <p>Every plant is hand-selected and inspected to ensure it meets our high standards of quality.</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b2.png' %}" alt="">
-                                    <h5>Perfect Service</h5>
-                                    <p>Our knowledgeable staff is always here to help you with your plant care questions and needs.</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b3.png' %}" alt="">
-                                    <h5>100% Natural</h5>
-                                    <p>We source our plants from sustainable growers and use organic, peat-free soil mixes.</p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="single-benefits-area">
-                                    <img src="{% static 'img/core-img/b4.png' %}" alt="">
-                                    <h5>Environmentally Friendly</h5>
-                                    <p>We are committed to sustainable practices, from our packaging to our in-store operations.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="single-benefits-area text-center mb-100">
+                    <img src="{% static 'img/core-img/b2.png' %}" alt="">
+                    <h5>Expert Support</h5>
+                    <p>Our knowledgeable staff is always here to help you with your plant care questions and needs.</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="single-benefits-area text-center mb-100">
+                    <img src="{% static 'img/core-img/b3.png' %}" alt="">
+                    <h5>Sustainable Sourcing</h5>
+                    <p>We source our plants from sustainable growers and use organic, peat-free soil mixes.</p>
                 </div>
             </div>
         </div>
-    </section>
-{% endblock %}
+    </div>
+</section>
+{# END: Why Choose Us Section #}
+
+
+{# Testimonial Section has been removed as requested #}
+
+
+<style>
+    /* New Category Card Styles */
+    .single-category-card { 
+        border: 1px solid #ebebeb; 
+        border-radius: 8px; 
+        overflow: hidden; 
+        transition: box-shadow 0.3s ease, transform 0.3s ease; 
+        background-color: #fff;
+    }
+    .single-category-card:hover { 
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); 
+        transform: translateY(-5px); 
+    }
+    .category-image { 
+        height: 250px; 
+        overflow: hidden; 
+    }
+    .category-image img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+    }
+    .category-title { 
+        padding: 20px; 
+        text-align: center; 
+        border-top: 1px solid #ebebeb; 
+    }
+    .category-title h5 { 
+        margin: 0; 
+        font-weight: 600; 
+        color: #2a2a2a; 
+    }
+
+    /* Product Card Styles */
+    .product-card{background:#fff;border:1px solid #ebebeb;border-radius:8px;overflow:hidden;transition:box-shadow .3s ease,transform .3s ease;display:flex;flex-direction:column;height:100%}.product-card:hover{box-shadow:0 8px 25px rgba(0,0,0,.1);transform:translateY(-5px)}.product-image-container{height:220px;overflow:hidden}.product-image-container img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}.product-card:hover .product-image-container img{transform:scale(1.05)}.product-card-body{padding:20px;text-align:center;flex-grow:1;display:flex;flex-direction:column}.product-name h5{font-size:1rem;font-weight:600;margin-bottom:10px;color:#2a2a2a;transition:color .3s ease}.product-name:hover h5{color:#70c745}.product-price{font-size:1.1rem;font-weight:700;color:#70c745;margin-bottom:15px;margin-top:auto}.product-card-body .btn{margin-top:10px}
+</style>
+
+{% endblock main %}

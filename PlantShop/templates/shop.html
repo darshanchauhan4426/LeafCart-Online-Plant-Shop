@@ -1,29 +1,38 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Shop{% endblock %}
+{% block title %}Shop{% endblock title %}
 
 {% block main %}
+{# Main content for the Shop page starts here. #}
+
+{# START: Breadcrumb Area #}
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center"
          style="background-image: url('{% static "img/bg-img/24.jpg" %}');">
         <h2>Shop Our Collection</h2>
     </div>
 </div>
+{# END: Breadcrumb Area #}
 
+{# START: Main Shop Section #}
 <section class="shop-page section-padding-100">
     <div class="container">
         <div class="row">
             
-            <!-- FIX: Products Area is now first (on the left) -->
+            {# START: Main Product Display Area (Left Column) #}
             <div class="col-12 col-md-8 col-lg-9">
                 <div class="shop-products-area">
+                    {# START: Sorting and Search Header #}
                     <div class="row align-items-center mb-4">
                         <div class="col-md-8">
+                            {# Displays a title only when a search has been performed #}
                             {% if search_query %}<h4>Search Results for: "{{ search_query }}"</h4>{% endif %}
                         </div>
                         <div class="col-md-4">
+                            {# This form handles product sorting. It resubmits the page with a 'sort' parameter. #}
                             <form action="{% url 'shop' %}" method="get" id="sortForm">
+                                {# Hidden inputs ensure that existing filters (like search and category) are preserved when sorting #}
                                 {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
                                 {% for cat_id in selected_categories %}<input type="hidden" name="categories" value="{{ cat_id }}">{% endfor %}
                                 <select name="sort" class="custom-select" onchange="this.form.submit();">
@@ -35,17 +44,24 @@
                             </form>
                         </div>
                     </div>
+                    {# END: Sorting and Search Header #}
 
                     <div class="row">
+                        {# This token is required for the AJAX wishlist script to work securely #}
                         {% csrf_token %}
+
+                        {# START: Product Loop #}
+                        {# This iterates through the 'page_obj' (the paginated list of products) from the view #}
                         {% for product in page_obj %}
                         <div class="col-12 col-sm-6 col-lg-4">
                             <div class="single-product-area mb-50">
                                 <div class="product-card">
                                     <div class="product-image-container">
                                         <a href="{% url 'shop_details' product.id %}">
+                                            {# Displays the first image from the product's gallery #}
                                             {% if product.images.all.0 %}<img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}">{% else %}<img src="{% static 'img/no-image.png' %}" alt="No Image">{% endif %}
                                         </a>
+                                        {# START: Interactive Wishlist Icon #}
                                         <div class="wishlist-icon">
                                             <a href="#" class="wishlist-btn ajax-wishlist-btn {% if product.id in wishlist_product_ids %}active{% endif %}" 
                                                data-add-url="{% url 'add_to_wishlist' product.id %}"
@@ -53,11 +69,13 @@
                                                <i class="fa fa-heart{% if not product.id in wishlist_product_ids %}-o{% endif %}"></i>
                                             </a>
                                         </div>
+                                        {# END: Interactive Wishlist Icon #}
                                     </div>
                                     <div class="product-card-body">
                                         <a href="{% url 'shop_details' product.id %}" class="product-name"><h5>{{ product.name }}</h5></a>
                                         <div class="product-rating mb-2">{% for i in "12345" %}<i class="fa fa-star{% if product.average_rating < i|add:'0' %}-o{% endif %}"></i>{% endfor %}<span class="review-count"> ({{ product.review_count }})</span></div>
                                         <p class="product-price">₹{{ product.price|floatformat:2 }}</p>
+                                        {# Checks stock and shows either 'Add to Cart' or 'Out of Stock' #}
                                         {% if product.stock > 0 %}
                                             <form action="{% url 'add_to_cart' product.id %}" method="post">{% csrf_token %}<input type="hidden" name="quantity" value="1"><button type="submit" class="btn alazea-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button></form>
                                         {% else %}
@@ -67,17 +85,23 @@
                                 </div>
                             </div>
                         </div>
+                        {# This block is shown if no products match the filters or search #}
                         {% empty %}
                         <div class="col-12 text-center">
                             {% if search_query %}<h5>No products found matching your search.</h5>{% else %}<h5>No products found.</h5>{% endif %}
                             <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Back to Shop</a>
                         </div>
                         {% endfor %}
+                        {# END: Product Loop #}
                     </div>
+
+                    {# START: Pagination #}
+                    {# This section only appears if there is more than one page of products #}
                     {% if page_obj.has_other_pages %}
                     <div class="d-flex justify-content-center">
                         <nav aria-label="Page navigation">
                             <ul class="pagination">
+                                {# The complex URL parameters ensure that all filters are remembered when changing pages #}
                                 {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}{% if sort_option != 'default' %}&sort={{ sort_option }}{% endif %}">&laquo;</a></li>{% endif %}
                                 {% for num in page_obj.paginator.page_range %}<li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}{% if sort_option != 'default' %}&sort={{ sort_option }}{% endif %}">{{ num }}</a></li>{% endfor %}
                                 {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% for cat_id in selected_categories %}&categories={{ cat_id }}{% endfor %}{% if search_query %}&search={{ search_query }}{% endif %}{% if sort_option != 'default' %}&sort={{ sort_option }}{% endif %}">&raquo;</a></li>{% endif %}
@@ -85,10 +109,12 @@
                         </nav>
                     </div>
                     {% endif %}
+                    {# END: Pagination #}
                 </div>
             </div>
-
-            <!-- FIX: Sidebar Area is now second (on the right) -->
+            {# END: Main Product Display Area #}
+            
+            {# START: Sidebar Area (Right Column) #}
             <div class="col-12 col-md-4 col-lg-3">
                 <div class="shop-sidebar-area">
                     <div class="shop-widget catagory mb-50">
@@ -107,12 +133,14 @@
                     </div>
                 </div>
             </div>
+            {# END: Sidebar Area #}
         </div>
     </div>
 </section>
+{# END: Main Shop Section #}
 
+{# Custom CSS for the product cards, wishlist icon, and category list #}
 <style>
-    /* Product Card Styles */
     .product-card{background:#fff;border:1px solid #ebebeb;border-radius:8px;overflow:hidden;transition:box-shadow .3s ease,transform .3s ease;display:flex;flex-direction:column;height:100%}.product-card:hover{box-shadow:0 8px 25px rgba(0,0,0,.1);transform:translateY(-5px)}.product-image-container{height:220px;overflow:hidden;position:relative}.product-image-container img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}.product-card:hover .product-image-container img{transform:scale(1.05)}.product-card-body{padding:20px;text-align:center;flex-grow:1;display:flex;flex-direction:column}.product-name h5{font-size:1rem;font-weight:600;margin-bottom:10px;color:#2a2a2a;transition:color .3s ease}.product-name:hover h5{color:#70c745}.product-rating{color:#f5a623}.review-count{font-size:.8rem;color:#777}.product-price{font-size:1.1rem;font-weight:700;color:#70c745;margin-bottom:15px;margin-top:auto}.product-card-body .btn{margin-top:10px}
     .wishlist-icon{position:absolute;top:15px;right:15px;z-index:10}.wishlist-icon .wishlist-btn{display:inline-block;width:35px;height:35px;background-color:#fff;border-radius:50%;color:#2a2a2a;text-align:center;line-height:35px;box-shadow:0 2px 5px rgba(0,0,0,.1);transition:all .3s ease}.wishlist-icon .wishlist-btn:hover{background-color:#70c745;color:#fff}.wishlist-icon .wishlist-btn.active{background-color:#ff4f6e;color:#fff}
     .category-list ul { list-style: none; padding: 0; margin: 0; }
@@ -121,9 +149,9 @@
     .category-list li a.active { background-color: #70c745; color: #fff; font-weight: 600; }
 </style>
 
+{# JavaScript for the interactive AJAX wishlist functionality #}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Interactive Wishlist Script
     const wishlistButtons = document.querySelectorAll('.ajax-wishlist-btn');
     const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
     wishlistButtons.forEach(button => {
@@ -149,5 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-{% endblock %}
 
+{# Main content for the Shop page ends here. #}
+{% endblock main %}

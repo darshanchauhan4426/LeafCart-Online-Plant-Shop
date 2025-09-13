@@ -1,3 +1,4 @@
+{# Loads the Django static file handler to manage CSS, JS, and images #}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -7,31 +8,43 @@
     <meta name="description" content="A shop for all your plant needs.">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{% block title %}Plant Shop{% endblock %}</title>
+
+    {# The title block can be overridden by child templates #}
+    <title>{% block title %}Plant Shop{% endblock title %}</title>
+
+    {# Link to favicon and the main stylesheet #}
     <link rel="icon" href="{% static 'img/core-img/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 
 <body>
+    {# START: Preloader section that shows while the page is loading #}
     <div class="preloader d-flex align-items-center justify-content-center">
         <div class="preloader-circle"></div>
         <div class="preloader-img"><img src="{% static 'img/core-img/leaf.png' %}" alt=""></div>
     </div>
+    {# END: Preloader #}
 
+
+    {# START: Header Area #}
     <header class="header-area">
+        {# Top bar of the header with contact info and user actions #}
         <div class="top-header-area">
             <div class="container">
                 <div class="row">
                     <div class="col-12">
                         <div class="top-header-content d-flex align-items-center justify-content-between">
+                            {# Contact Info #}
                             <div class="top-header-meta">
                                 <a href="mailto:support@myshop.com"><i class="fa fa-envelope-o" aria-hidden="true"></i> <span>Email: support@myshop.com</span></a>
                                 <a href="tel:+919876543210"><i class="fa fa-phone" aria-hidden="true"></i> <span>Call Us: +91 98765 43210</span></a>
                             </div>
+
+                            {# User Actions: Login/Logout, Profile, Wishlist, Cart #}
                             <div class="top-header-meta d-flex">
+                                {# This block shows different links based on whether the user is logged in #}
                                 {% if user.is_authenticated %}
                                     <div class="login">
-                                        <!-- FIX: Shows the user's name, and links to the profile page -->
                                         <a href="{% url 'profile_view' %}"><i class="fa fa-user" aria-hidden="true"></i> <span>{{ user.full_name|default:user.email }}</span></a>
                                     </div>
                                     <div class="login">
@@ -45,7 +58,8 @@
                                     <div class="login"><a href="{% url 'register_view' %}"><i class="fa fa-user-plus" aria-hidden="true"></i> <span>Register</span></a></div>
                                 {% endif %}
                                 <div class="cart">
-                                    <a href="{% url 'cart_view' %}"><i class="fa fa-shopping-cart" aria-hidden="true"></i> 
+                                    <a href="{% url 'cart_view' %}"><i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                                        {# The cart item count is provided by our custom context processor #}
                                         <span>Cart <span class="cart-quantity" id="cart-count-badge">({{ cart_item_count }})</span></span>
                                     </a>
                                 </div>
@@ -55,11 +69,13 @@
                 </div>
             </div>
         </div>
+
+        {# Main navigation bar #}
         <div class="alazea-main-menu">
             <div class="classy-nav-container breakpoint-off">
                 <div class="container">
                     <nav class="classy-navbar justify-content-between" id="alazeaNav">
-                        <a href="{% url 'index' %}" class="nav-brand"><img src="{% static 'img/core-img/logo.png' %}" alt="LeafCart"></a>
+                        <a href="{% url 'index' %}" class="nav-brand"><img src="{% static 'img/core-img/logo.png' %}" alt="Plant Shop Logo"></a>
                         <div class="classy-navbar-toggler"><span class="navbarToggler"><span></span><span></span><span></span></span></div>
                         <div class="classy-menu">
                             <div class="classycloseIcon"><div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div></div>
@@ -85,20 +101,117 @@
             </div>
         </div>
     </header>
+    {# END: Header Area #}
 
-    <!-- FIX: The global message block has been removed from here -->
 
-    {% block main %}{% endblock %}
+    {# START: Main Content Block #}
+    {# This is where the content of individual pages (index.html, shop.html, etc.) will be inserted. #}
+    {% block main %}{% endblock main %}
+    {# END: Main Content Block #}
 
+
+    {# START: Footer Area #}
     <footer class="footer-area bg-img" style="background-image: url({% static 'img/bg-img/3.jpg' %});">
-        <!-- ... (Your footer code remains the same) ... -->
-    </footer>
+        <div class="main-footer-area">
+            <div class="container">
+                <div class="row">
 
+                    {# Footer Widget 1: Logo and Social Links #}
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="single-footer-widget">
+                            <div class="footer-logo mb-30"><a href="{% url 'index' %}"><img src="{% static 'img/core-img/logo.png' %}" alt=""></a></div>
+                            <p>Our mission is to bring the beauty of nature into every home, one plant at a time.</p>
+                            <div class="social-info">
+                                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                                <a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Footer Widget 2: Quick Links #}
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="single-footer-widget">
+                            <div class="widget-title"><h5>QUICK LINK</h5></div>
+                            <nav class="widget-nav">
+                                <ul>
+                                    <li><a href="{% url 'shop' %}">Shop</a></li>
+                                    <li><a href="{% url 'about' %}">About Us</a></li>
+                                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                                    <li><a href="{% url 'profile_view' %}">My Account</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+
+                    {# Footer Widget 3: Dynamic Best Sellers #}
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="single-footer-widget">
+                            <div class="widget-title"><h5>BEST SELLER</h5></div>
+                            {# This loop displays the best-selling products from the context processor #}
+                            {% for product in bestseller_products %}
+                                <div class="single-best-seller-product d-flex align-items-center">
+                                    <div class="product-thumbnail">
+                                        <a href="{% url 'shop_details' product.id %}">
+                                            {% if product.images.all.0 %}<img src="{{ product.images.all.0.image.url }}" alt="{{ product.name }}">{% else %}<img src="{% static 'img/no-image.png' %}" alt="No Image">{% endif %}
+                                        </a>
+                                    </div>
+                                    <div class="product-info">
+                                        <a href="{% url 'shop_details' product.id %}">{{ product.name }}</a>
+                                        <p>₹{{ product.price|floatformat:2 }}</p>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p>No best sellers to show yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Footer Widget 4: Contact Information #}
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="single-footer-widget">
+                            <div class="widget-title"><h5>CONTACT</h5></div>
+                            <div class="contact-information">
+                                <p><span>Address:</span> 123 Plant Lane, Mumbai, India</p>
+                                <p><span>Phone:</span> +91 98765 43210</p>
+                                <p><span>Email:</span> support@myshop.com</p>
+                                <p><span>Open hours:</span> Mon - Sun: 8 AM to 9 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {# Bottom section of the footer with copyright info #}
+        <div class="footer-bottom-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12"><div class="border-line"></div></div>
+                    <div class="col-12 col-md-6">
+                        <div class="copywrite-text"><p>&copy; <script>document.write(new Date().getFullYear());</script> All rights reserved | Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="{% url 'index' %}" target="_blank">Darshan</a></p></div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="footer-nav">
+                            <nav><ul><li><a href="{% url 'index' %}">Home</a></li><li><a href="{% url 'about' %}">About</a></li><li><a href="{% url 'shop' %}">Shop</a></li><li><a href="{% url 'contact' %}">Contact</a></li></ul></nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {# END: Footer Area #}
+
+
+    {# START: JavaScript Files #}
+    {# These are loaded at the end of the body for faster page rendering #}
     <script src="{% static 'js/jquery/jquery-2.2.4.min.js' %}"></script>
     <script src="{% static 'js/bootstrap/popper.min.js' %}"></script>
     <script src="{% static 'js/bootstrap/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/plugins/plugins.js' %}"></script>
     <script src="{% static 'js/active.js' %}"></script>
+    {# END: JavaScript Files #}
+
 </body>
 </html>
-

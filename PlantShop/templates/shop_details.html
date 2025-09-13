@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ product.name }} | Shop Details{% endblock %}
+{% block title %}{{ product.name }} | Shop Details{% endblock title %}
 
 {% block main %}
+{# Main content for the Product Details page starts here. #}
 
-<!-- ##### Breadcrumb Area Start ##### -->
+{# START: Breadcrumb Area #}
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>Shop Details</h2>
@@ -24,17 +25,18 @@
         </div>
     </div>
 </div>
-<!-- ##### Breadcrumb Area End ##### -->
+{# END: Breadcrumb Area #}
 
-<!-- ##### Single Product Details Area Start ##### -->
+{# START: Main Product Details Section #}
 <section class="single_product_details_area mb-50">
     <div class="produts-details--content mb-50">
         <div class="container">
             <div class="row justify-content-between">
 
-                <!-- Image Slider with Lightbox -->
+                {# START: Product Image Slider & Lightbox Gallery #}
                 <div class="col-12 col-md-6 col-lg-5">
                     <div class="product-slider-area">
+                        {# This unique ID is targeted by the JavaScript to initialize the slider and lightbox #}
                         <div id="mainProductSlider" class="product-image-slider owl-carousel">
                             {% if product.images.all %}
                                 {% for image in product.images.all %}
@@ -50,8 +52,9 @@
                         </div>
                     </div>
                 </div>
+                {# END: Product Image Slider & Lightbox Gallery #}
 
-                <!-- Main Product Info -->
+                {# START: Product Information #}
                 <div class="col-12 col-md-6">
                     <div class="single_product_desc">
                         <h4 class="title">{{ product.name }}</h4>
@@ -61,55 +64,53 @@
                         </div>
                         <h4 class="price">₹{{ product.price|floatformat:2 }}</h4>
                         <div class="short_overview"><p>{{ product.description|linebreaks }}</p></div>
-
-                        <div class="products-meta mt-4"><p><span>Category:</span> {{ product.category.name }}</p></div>
-
                         
-                        <!-- Actions Area: Add to Cart and Wishlist -->
-                        <div class="cart--area d-flex flex-wrap align-items-center">
-                             {% if product.stock > 0 %}
-                                <form class="cart clearfix d-flex align-items-center" method="post" action="{% url 'add_to_cart' product.id %}">
+                        {# START: Actions Panel (Add to Cart & Wishlist) #}
+                        <div class="actions-panel">
+                            {% if product.stock > 0 %}
+                                <form class="cart-form d-flex align-items-center" method="post" action="{% url 'add_to_cart' product.id %}">
                                     {% csrf_token %}
                                     <div class="quantity">
                                         <span class="qty-minus" onclick="var e=document.getElementById('qty'),t=e.value;!isNaN(t)&&t>1&&e.value--;return!1"><i class="fa fa-minus"></i></span>
                                         <input type="number" class="qty-text" id="qty" step="1" min="1" max="{{ product.stock }}" name="quantity" value="1">
                                         <span class="qty-plus" onclick="var e=document.getElementById('qty'),t=e.value;!isNaN(t)&&e.value++;return!1"><i class="fa fa-plus"></i></span>
                                     </div>
-                                    <button type="submit" name="addtocart" class="btn alazea-btn ml-15">Add to cart</button>
+                                    <button type="submit" name="addtocart" class="btn alazea-btn ml-3 flex-grow-1">Add to cart</button>
                                 </form>
-
-                                <!-- NEW: Wishlist button moved here -->
-                                <div class="wishlist-btn ml-15">
+                                <div class="wishlist-btn-area ml-3">
                                     {% if user.is_authenticated %}
-                                        <a href="#" class="btn btn-outline-secondary ajax-wishlist-btn {% if is_in_wishlist %}active{% endif %}"
+                                        <a href="#" class="wishlist-btn ajax-wishlist-btn {% if is_in_wishlist %}active{% endif %}"
                                            data-add-url="{% url 'add_to_wishlist' product.id %}"
                                            data-remove-url="{% url 'remove_from_wishlist' product.id %}">
                                             <i class="fa fa-heart{% if not is_in_wishlist %}-o{% endif %}"></i>
                                         </a>
                                     {% else %}
-                                        <a href="{% url 'login_view' %}?next={{ request.path }}" class="btn btn-outline-secondary">
-                                            <i class="fa fa-heart-o"></i>
-                                        </a>
+                                        <a href="{% url 'login_view' %}?next={{ request.path }}" class="wishlist-btn"><i class="fa fa-heart-o"></i></a>
                                     {% endif %}
                                 </div>
                             {% else %}
                                 <p class="font-weight-bold text-danger">This product is currently out of stock.</p>
                             {% endif %}
                         </div>
-                        
+                        {# END: Actions Panel #}
+
+                        <div class="products--meta mt-4"><p><span>Category:</span> <a href="{% url 'shop' %}?categories={{ product.category.id }}">{{ product.category.name }}</a></p></div>
                     </div>
                 </div>
+                {# END: Product Information #}
             </div>
         </div>
     </div>
 </section>
-<!-- ##### Single Product Details Area End ##### -->
+{# END: Main Product Details Section #}
 
-<!-- ##### Customer Reviews Area Start ##### -->
+
+{# START: Customer Reviews Section #}
 <section class="customer-reviews-area section-padding-0-100" id="reviews">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
+                {# Header for the reviews section with overall rating #}
                 <div class="reviews-header">
                     <div class="review-title-area">
                         <h2>Customer Reviews</h2>
@@ -122,6 +123,8 @@
                         <button class="btn alazea-btn" type="button" data-toggle="collapse" data-target="#reviewFormCollapse" aria-expanded="false">Write a Review</button>
                     </div>
                 </div>
+
+                {# Collapsible form for submitting a new review #}
                 <div class="collapse" id="reviewFormCollapse">
                     <div class="submit-review-form-area mt-4 mb-4">
                         {% if user.is_authenticated %}
@@ -136,6 +139,8 @@
                         {% endif %}
                     </div>
                 </div>
+
+                {# List of existing customer reviews #}
                 <div class="reviews-list">
                     {% for review in product.reviews.all %}
                     <div class="single-review-item">
@@ -154,9 +159,10 @@
         </div>
     </div>
 </section>
-<!-- ##### Customer Reviews Area End ##### -->
+{# END: Customer Reviews Section #}
 
-<!-- ##### Related Product Area Start ##### -->
+
+{# START: Related Products Section #}
 <div class="related-products-area">
     <div class="container">
         <div class="row">
@@ -194,8 +200,10 @@
         </div>
     </div>
 </div>
-<!-- ##### Related Product Area End ##### -->
+{# END: Related Products Section #}
 
+
+{# Custom CSS styles for this page's unique elements #}
 <style>
     /* Slider & Card Styles */
     .product-slider-area{position:relative}.product-image-slider .owl-prev,.product-image-slider .owl-next{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;background-color:rgba(255,255,255,.8);color:#2a2a2a;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:20px;transition:all .3s ease;box-shadow:0 2px 10px rgba(0,0,0,.15)}.product-image-slider .owl-prev{left:15px}.product-image-slider .owl-next{right:15px}.product-image-slider .owl-prev:hover,.product-image-slider .owl-next:hover{background-color:#70c745;color:#fff}.product-image-slider .owl-dots{text-align:center;margin-top:15px}.product-image-slider .owl-dot{width:10px;height:10px;background-color:#ddd;border-radius:50%;margin:0 5px;display:inline-block}.product-image-slider .owl-dot.active{background-color:#70c745}
@@ -203,8 +211,17 @@
     
     /* Review Section Styles */
     .reviews-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ebebeb;padding-bottom:20px;margin-bottom:30px}.reviews-header h2{margin-bottom:0}.avg-rating-summary{display:flex;align-items:center;gap:10px;color:#777}.avg-rating-summary .fa-star{color:#f5a623}.single-review-item{display:flex;padding:20px 0;border-bottom:1px solid #f2f2f2}.single-review-item:last-child{border-bottom:none}.reviewer-avatar{width:45px;height:45px;background-color:#70c745;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:50%;font-weight:700;font-size:1.2rem;margin-right:20px;flex-shrink:0}.review-content{flex-grow:1}.reviewer-name{font-weight:600;margin-right:10px}.review-date{font-size:.85rem;color:#999}.review-rating{color:#f5a623;margin-top:5px}.review-comment{margin-top:10px}.interactive-stars{font-size:1.5rem;color:#ccc}.interactive-stars i{cursor:pointer;transition:color .2s ease}.interactive-stars i.hover,.interactive-stars i.selected{color:#f5a623}
+
+    /* Actions Panel Styles */
+    .single_product_desc .category-link { margin-top: -10px; margin-bottom: 10px; font-size: 0.9rem; }
+    .actions-panel { display: flex; align-items: center; width: 100%; margin-top: 20px; }
+    .actions-panel .cart-form { flex-grow: 1; }
+    .actions-panel .wishlist-btn { display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; border: 2px solid #ebebeb; border-radius: 8px; font-size: 1.2rem; color: #2a2a2a; transition: all 0.3s ease; }
+    .actions-panel .wishlist-btn:hover { border-color: #70c745; color: #70c745; }
+    .actions-panel .wishlist-btn.active { border-color: #ff4f6e; background-color: #ff4f6e; color: #fff; }
 </style>
 
+{# JavaScript to initialize interactive elements on the page #}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Interactive Star Rating Logic
@@ -245,41 +262,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // AJAX Wishlist Logic
     const wishlistButtons = document.querySelectorAll('.ajax-wishlist-btn');
-    // CSRF token is available inside the 'add to cart' form
-    const csrfToken = document.querySelector('form.cart [name=csrfmiddlewaretoken]').value; 
+    const csrfTokenInput = document.querySelector('form.cart [name=csrfmiddlewaretoken]');
+    
+    if (csrfTokenInput) {
+        const csrfToken = csrfTokenInput.value; 
+        wishlistButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                const buttonElement = this;
+                const icon = buttonElement.querySelector('i');
+                const isWishlisted = buttonElement.classList.contains('active');
+                const url = isWishlisted ? buttonElement.dataset.removeUrl : buttonElement.dataset.addUrl;
 
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', function(event) {
-            event.preventDefault();
-            
-            const buttonElement = this;
-            const icon = buttonElement.querySelector('i');
-            const textSpan = buttonElement.querySelector('.wishlist-text');
-            const isWishlisted = buttonElement.classList.contains('active');
-            
-            const url = isWishlisted ? buttonElement.dataset.removeUrl : buttonElement.dataset.addUrl;
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfToken,
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    buttonElement.classList.toggle('active');
-                    const isNowWishlisted = buttonElement.classList.contains('active');
-                    if (icon) { icon.className = isNowWishlisted ? 'fa fa-heart' : 'fa fa-heart-o'; }
-                    if (textSpan) { textSpan.textContent = isNowWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'; }
-                }
-            })
-            .catch(error => console.error('Wishlist Error:', error));
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrfToken },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        buttonElement.classList.toggle('active');
+                        icon.className = buttonElement.classList.contains('active') ? 'fa fa-heart' : 'fa fa-heart-o';
+                    }
+                })
+                .catch(error => console.error('Wishlist Error:', error));
+            });
         });
-    });
+    }
 });
 </script>
 
-{% endblock %}
-
+{# Main content for the Product Details page ends here. #}
+{% endblock main %}
