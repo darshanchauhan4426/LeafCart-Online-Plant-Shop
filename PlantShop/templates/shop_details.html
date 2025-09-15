@@ -75,7 +75,7 @@
                                         <input type="number" class="qty-text" id="qty" step="1" min="1" max="{{ product.stock }}" name="quantity" value="1">
                                         <span class="qty-plus" onclick="var e=document.getElementById('qty'),t=e.value;!isNaN(t)&&e.value++;return!1"><i class="fa fa-plus"></i></span>
                                     </div>
-                                    <button type="submit" name="addtocart" class="btn alazea-btn ml-3 flex-grow-1">Add to cart</button>
+                                    <button type="submit" name="addtocart" class="btn leafcart-btn ml-3 flex-grow-1">Add to cart</button>
                                 </form>
                                 <div class="wishlist-btn-area ml-3">
                                     {% if user.is_authenticated %}
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                     <div class="write-review-btn-area">
-                        <button class="btn alazea-btn" type="button" data-toggle="collapse" data-target="#reviewFormCollapse" aria-expanded="false">Write a Review</button>
+                        <button class="btn leafcart-btn" type="button" data-toggle="collapse" data-target="#reviewFormCollapse" aria-expanded="false">Write a Review</button>
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@
                                 {% csrf_token %}
                                 <div class="form-group"><label>Your Rating</label><div class="interactive-stars"><i class="fa fa-star" data-value="1"></i><i class="fa fa-star" data-value="2"></i><i class="fa fa-star" data-value="3"></i><i class="fa fa-star" data-value="4"></i><i class="fa fa-star" data-value="5"></i></div><input type="hidden" name="rating" id="rating-input" value="5" required></div>
                                 <div class="form-group"><label for="comments">Your Comment</label><textarea class="form-control" id="comments" name="comment" rows="5" placeholder="Share your thoughts..." required></textarea></div>
-                                <button type="submit" class="btn alazea-btn">Submit Review</button>
+                                <button type="submit" class="btn leafcart-btn">Submit Review</button>
                             </form>
                         {% else %}
                             <p>Please <a href="{% url 'login_view' %}?next={{ request.path }}">login to write a review</a>.</p>
@@ -185,10 +185,10 @@
                             {% if related.stock > 0 %}
                                 <form action="{% url 'add_to_cart' related.id %}" method="post">
                                     {% csrf_token %}<input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn alazea-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+                                    <button type="submit" class="btn leafcart-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
                                 </form>
                             {% else %}
-                                <button type="button" class="btn alazea-btn btn-sm w-100" disabled style="background-color: #a0a0a0; border-color: #a0a0a0;">Out of Stock</button>
+                                <button type="button" class="btn leafcart-btn btn-sm w-100" disabled style="background-color: #a0a0a0; border-color: #a0a0a0;">Out of Stock</button>
                             {% endif %}
                         </div>
                     </div>

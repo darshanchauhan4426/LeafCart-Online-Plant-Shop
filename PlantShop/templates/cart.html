@@ -89,7 +89,7 @@
                         {% endfor %}
                     </div>
                     <div class="update-cart-btn-container">
-                        <button type="submit" class="btn alazea-btn">Update Quantities</button>
+                        <button type="submit" class="btn leafcart-btn">Update Quantities</button>
                     </div>
                 </form>
             </div>
@@ -122,11 +122,11 @@
                             <div class="form-group">
                                 <input type="text" class="form-control" name="code" placeholder="Enter coupon code">
                             </div>
-                            <button type="submit" class="btn alazea-btn btn-sm w-100">Apply Coupon</button>
+                            <button type="submit" class="btn leafcart-btn btn-sm w-100">Apply Coupon</button>
                         </form>
                     </div>
 
-                    <a href="{% url 'checkout' %}" class="btn alazea-btn w-100 mt-3">Proceed to Checkout</a>
+                    <a href="{% url 'checkout' %}" class="btn leafcart-btn w-100 mt-3">Proceed to Checkout</a>
                 </div>
             </div>
             {# END: Order Summary #}
@@ -139,7 +139,7 @@
                     <img src="{% static 'img/core-img/cart.png' %}" alt="Empty Cart" style="max-width: 100px;">
                     <h4 class="mt-4">Your cart is empty</h4>
                     <p>Looks like you haven't added anything to your cart yet.</p>
-                    <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Continue Shopping</a>
+                    <a href="{% url 'shop' %}" class="btn leafcart-btn mt-3">Continue Shopping</a>
                 </div>
             </div>
         </div>

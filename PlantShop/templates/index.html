@@ -16,8 +16,8 @@
                             <h2>Bring Nature Indoors</h2>
                             <p>Discover our curated collection of beautiful, healthy plants that will bring life and fresh air into your home or office.</p>
                             <div class="welcome-btn-group">
-                                <a href="{% url 'shop' %}" class="btn alazea-btn mr-30">GO TO SHOP</a>
-                                <a href="{% url 'contact' %}" class="btn alazea-btn active">CONTACT US</a>
+                                <a href="{% url 'shop' %}" class="btn leafcart-btn mr-30">GO TO SHOP</a>
+                                <a href="{% url 'contact' %}" class="btn leafcart-btn active">CONTACT US</a>
                             </div>
                         </div>
                     </div>
@@ -33,8 +33,8 @@
                             <h2>Expert Care, Thriving Plants</h2>
                             <p>From rare finds to timeless classics, each plant is nurtured with expert care to ensure it thrives in its new home.</p>
                             <div class="welcome-btn-group">
-                                <a href="{% url 'shop' %}" class="btn alazea-btn mr-30">GO TO SHOP</a>
-                                <a href="{% url 'contact' %}" class="btn alazea-btn active">CONTACT US</a>
+                                <a href="{% url 'shop' %}" class="btn leafcart-btn mr-30">GO TO SHOP</a>
+                                <a href="{% url 'contact' %}" class="btn leafcart-btn active">CONTACT US</a>
                             </div>
                         </div>
                     </div>
@@ -111,10 +111,10 @@
                                         {# FIX: Removed extra <> brackets #}
                                         {% csrf_token %}
                                         <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="btn alazea-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+                                        <button type="submit" class="btn leafcart-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
                                     </form>
                                 {% else %}
-                                    <button type="button" class="btn alazea-btn btn-sm w-100" disabled style="background-color:#a0a0a0;border-color:#a0a0a0;">Out of Stock</button>
+                                    <button type="button" class="btn leafcart-btn btn-sm w-100" disabled style="background-color:#a0a0a0;border-color:#a0a0a0;">Out of Stock</button>
                                 {% endif %}
                             </div>
                         </div>
@@ -125,7 +125,7 @@
                 <div class="col-12"><p class="text-center">No new products to display.</p></div>
             {% endif %}
             <div class="col-12 text-center">
-                <a href="{% url 'shop' %}" class="btn alazea-btn">View All Products</a>
+                <a href="{% url 'shop' %}" class="btn leafcart-btn">View All Products</a>
             </div>
         </div>
     </div>

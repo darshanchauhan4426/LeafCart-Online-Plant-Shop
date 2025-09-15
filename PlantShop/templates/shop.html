@@ -77,9 +77,9 @@
                                         <p class="product-price">₹{{ product.price|floatformat:2 }}</p>
                                         {# Checks stock and shows either 'Add to Cart' or 'Out of Stock' #}
                                         {% if product.stock > 0 %}
-                                            <form action="{% url 'add_to_cart' product.id %}" method="post">{% csrf_token %}<input type="hidden" name="quantity" value="1"><button type="submit" class="btn alazea-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button></form>
+                                            <form action="{% url 'add_to_cart' product.id %}" method="post">{% csrf_token %}<input type="hidden" name="quantity" value="1"><button type="submit" class="btn leafcart-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button></form>
                                         {% else %}
-                                            <button type="button" class="btn alazea-btn btn-sm w-100" disabled style="background-color:#a0a0a0;border-color:#a0a0a0;">Out of Stock</button>
+                                            <button type="button" class="btn leafcart-btn btn-sm w-100" disabled style="background-color:#a0a0a0;border-color:#a0a0a0;">Out of Stock</button>
                                         {% endif %}
                                     </div>
                                 </div>
@@ -89,7 +89,7 @@
                         {% empty %}
                         <div class="col-12 text-center">
                             {% if search_query %}<h5>No products found matching your search.</h5>{% else %}<h5>No products found.</h5>{% endif %}
-                            <a href="{% url 'shop' %}" class="btn alazea-btn mt-3">Back to Shop</a>
+                            <a href="{% url 'shop' %}" class="btn leafcart-btn mt-3">Back to Shop</a>
                         </div>
                         {% endfor %}
                         {# END: Product Loop #}
