@@ -56,21 +56,25 @@
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center">
-            {% for category in featured_categories %}
-            <div class="col-12 col-sm-6 col-lg-4">
-                <a href="{% url 'shop' %}?categories={{ category.id }}">
-                    <div class="single-category-card mb-100">
-                        <div class="category-image">
-                            <img src="{{ category.image.url }}" alt="{{ category.name }}">
-                        </div>
-                        <div class="category-title">
-                            <h5>{{ category.name }}</h5>
-                        </div>
+        <div class="row justify-content-center">           
+            {% if featured_categories %}
+                {% for category in featured_categories %}
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <a href="{% url 'shop' %}?categories={{ category.id }}">
+                            <div class="single-category-card mb-100">
+                                <div class="category-image">
+                                    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+                                </div>
+                                <div class="category-title">
+                                    <h5>{{ category.name }}</h5>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </a>
-            </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <div class="col-12"><p class="text-center">No catagory to display.</p></div>
+            {% endif %}
         </div>
     </div>
 </section>

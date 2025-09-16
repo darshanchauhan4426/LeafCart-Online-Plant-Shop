@@ -106,7 +106,7 @@
                         {# This block only appears if a valid coupon has been applied #}
                         {% if discount_amount > 0 %}
                         <li class="text-success">
-                            <span>Discount ({{ coupon_code }}%)</span>
+                            <span>Discount ({{ coupon_code }})</span>
                             <span id="cart-discount">- ₹{{ discount_amount|floatformat:2 }}</span>
                         </li>
                         {% endif %}
