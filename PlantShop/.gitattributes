@@ -1,0 +1,4 @@
+# .gitattributes
+
+# Ignore all files in the static directory for language statistics
+static/* linguist-vendored
