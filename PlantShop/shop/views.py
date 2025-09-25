@@ -1,7 +1,3 @@
-# ===================================================================
-# IMPORTS
-# ===================================================================
-
 # Standard Django Imports
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -119,7 +115,7 @@ def shop_details(request, product_id):
         return redirect("shop_details", product_id=product.id)
         
     context = {"product": product, "product_images": product_images, "related_products": related_products, "is_in_wishlist": is_in_wishlist}
-    return render(request, "shop-details.html", context)
+    return render(request, "shop_details.html", context)
 
 
 # ===================================================================
