@@ -121,9 +121,27 @@
                     <h3 class="profile-section-title">Change Password</h3>
                     <form action="{% url 'change_password_view' %}" method="post" class="profile-form">
                         {% csrf_token %}
-                        <div class="form-group"><label>Current Password</label><input type="password" class="form-control" name="current_password" required></div>
-                        <div class="form-group"><label>New Password</label><input type="password" class="form-control" name="new_password" required></div>
-                        <div class="form-group"><label>Confirm New Password</label><input type="password" class="form-control" name="confirm_password" required></div>
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <div class="password-container">
+                                    <input type="password" class="form-control" name="current_password" id="current_password" required>
+                                    <i class="fa fa-eye password-toggle-icon" id="toggleCurrentPassword" onclick="togglePasswordVisibility('current_password', 'toggleCurrentPassword')"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>New Password</label>
+                                <div class="password-container">
+                                    <input type="password" class="form-control" name="new_password" id="new_password" required>
+                                    <i class="fa fa-eye password-toggle-icon" id="toggleNewPassword" onclick="togglePasswordVisibility('new_password', 'toggleNewPassword')"></i>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Confirm New Password</label>
+                                <div class="password-container">
+                                    <input type="password" class="form-control" name="confirm_password" id="confirm_password_2" required>
+                                    <i class="fa fa-eye password-toggle-icon" id="toggleConfirmPassword2" onclick="togglePasswordVisibility('confirm_password_2', 'toggleConfirmPassword2')"></i>
+                                </div>
+                            </div>
                         <button type="submit" class="btn leafcart-btn btn-2">Change Password</button>
                     </form>
                 </div>

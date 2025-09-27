@@ -36,7 +36,6 @@
                 {# START: Product Image Slider & Lightbox Gallery #}
                 <div class="col-12 col-md-6 col-lg-5">
                     <div class="product-slider-area">
-                        {# This unique ID is targeted by the JavaScript to initialize the slider and lightbox #}
                         <div id="mainProductSlider" class="product-image-slider owl-carousel">
                             {% if product.images.all %}
                                 {% for image in product.images.all %}
@@ -58,11 +57,17 @@
                 <div class="col-12 col-md-6">
                     <div class="single_product_desc">
                         <h4 class="title">{{ product.name }}</h4>
+                        <p class="category-link">in <a href="{% url 'shop' %}?categories={{ product.category.id }}">{{ product.category.name }}</a></p>
                         <div class="product-rating-details mb-3">
                             {% for i in "12345" %}<i class="fa fa-star{% if product.average_rating < i|add:'0' %}-o{% endif %}"></i>{% endfor %}
                             <a href="#reviews">({{ product.review_count }} Customer Reviews)</a>
                         </div>
-                        <h4 class="price">₹{{ product.price|floatformat:2 }}</h4>
+                        <div class="price-stock-area">
+                            <h4 class="price">₹{{ product.price|floatformat:2 }}</h4>
+                            <div class="stock-status">
+                                {% if product.stock > 0 %}<span class="in-stock"><i class="fa fa-check"></i> In Stock</span>{% else %}<span class="out-of-stock"><i class="fa fa-times"></i> Out of Stock</span>{% endif %}
+                            </div>
+                        </div>
                         <div class="short_overview"><p>{{ product.description|linebreaks }}</p></div>
                         
                         {# START: Actions Panel (Add to Cart & Wishlist) #}
@@ -70,12 +75,12 @@
                             {% if product.stock > 0 %}
                                 <form class="cart-form d-flex align-items-center" method="post" action="{% url 'add_to_cart' product.id %}">
                                     {% csrf_token %}
-                                    <div class="quantity">
-                                        <span class="qty-minus" onclick="var e=document.getElementById('qty'),t=e.value;!isNaN(t)&&t>1&&e.value--;return!1"><i class="fa fa-minus"></i></span>
-                                        <input type="number" class="qty-text" id="qty" step="1" min="1" max="{{ product.stock }}" name="quantity" value="1">
-                                        <span class="qty-plus" onclick="var e=document.getElementById('qty'),t=e.value;!isNaN(t)&&e.value++;return!1"><i class="fa fa-plus"></i></span>
+                                    <div class="quantity-selector">
+                                        <button type="button" class="qty-btn" id="qty-minus">-</button>
+                                        <input type="number" class="qty-input" id="qty" step="1" min="1" max="{{ product.stock }}" name="quantity" value="1">
+                                        <button type="button" class="qty-btn" id="qty-plus">+</button>
                                     </div>
-                                    <button type="submit" name="addtocart" class="btn leafcart-btn ml-3 flex-grow-1">Add to cart</button>
+                                    <button type="submit" name="addtocart" class="btn alazea-btn ml-3 flex-grow-1">Add to cart</button>
                                 </form>
                                 <div class="wishlist-btn-area ml-3">
                                     {% if user.is_authenticated %}
@@ -89,12 +94,10 @@
                                     {% endif %}
                                 </div>
                             {% else %}
-                                <p class="font-weight-bold text-danger">This product is currently out of stock.</p>
+                                <p class="font-weight-bold text-danger mt-4">This product is currently out of stock.</p>
                             {% endif %}
                         </div>
                         {# END: Actions Panel #}
-
-                        <div class="products--meta mt-4"><p><span>Category:</span> <a href="{% url 'shop' %}?categories={{ product.category.id }}">{{ product.category.name }}</a></p></div>
                     </div>
                 </div>
                 {# END: Product Information #}
@@ -104,13 +107,11 @@
 </section>
 {# END: Main Product Details Section #}
 
-
 {# START: Customer Reviews Section #}
 <section class="customer-reviews-area section-padding-0-100" id="reviews">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
-                {# Header for the reviews section with overall rating #}
                 <div class="reviews-header">
                     <div class="review-title-area">
                         <h2>Customer Reviews</h2>
@@ -120,11 +121,9 @@
                         </div>
                     </div>
                     <div class="write-review-btn-area">
-                        <button class="btn leafcart-btn" type="button" data-toggle="collapse" data-target="#reviewFormCollapse" aria-expanded="false">Write a Review</button>
+                        <button class="btn alazea-btn" type="button" data-toggle="collapse" data-target="#reviewFormCollapse" aria-expanded="false">Write a Review</button>
                     </div>
                 </div>
-
-                {# Collapsible form for submitting a new review #}
                 <div class="collapse" id="reviewFormCollapse">
                     <div class="submit-review-form-area mt-4 mb-4">
                         {% if user.is_authenticated %}
@@ -132,15 +131,13 @@
                                 {% csrf_token %}
                                 <div class="form-group"><label>Your Rating</label><div class="interactive-stars"><i class="fa fa-star" data-value="1"></i><i class="fa fa-star" data-value="2"></i><i class="fa fa-star" data-value="3"></i><i class="fa fa-star" data-value="4"></i><i class="fa fa-star" data-value="5"></i></div><input type="hidden" name="rating" id="rating-input" value="5" required></div>
                                 <div class="form-group"><label for="comments">Your Comment</label><textarea class="form-control" id="comments" name="comment" rows="5" placeholder="Share your thoughts..." required></textarea></div>
-                                <button type="submit" class="btn leafcart-btn">Submit Review</button>
+                                <button type="submit" class="btn alazea-btn">Submit Review</button>
                             </form>
                         {% else %}
                             <p>Please <a href="{% url 'login_view' %}?next={{ request.path }}">login to write a review</a>.</p>
                         {% endif %}
                     </div>
                 </div>
-
-                {# List of existing customer reviews #}
                 <div class="reviews-list">
                     {% for review in product.reviews.all %}
                     <div class="single-review-item">
@@ -160,7 +157,6 @@
     </div>
 </section>
 {# END: Customer Reviews Section #}
-
 
 {# START: Related Products Section #}
 <div class="related-products-area">
@@ -185,10 +181,10 @@
                             {% if related.stock > 0 %}
                                 <form action="{% url 'add_to_cart' related.id %}" method="post">
                                     {% csrf_token %}<input type="hidden" name="quantity" value="1">
-                                    <button type="submit" class="btn leafcart-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
+                                    <button type="submit" class="btn alazea-btn btn-sm w-100"><i class="fa fa-shopping-cart"></i> Add to Cart</button>
                                 </form>
                             {% else %}
-                                <button type="button" class="btn leafcart-btn btn-sm w-100" disabled style="background-color: #a0a0a0; border-color: #a0a0a0;">Out of Stock</button>
+                                <button type="button" class="btn alazea-btn btn-sm w-100" disabled style="background-color: #a0a0a0; border-color: #a0a0a0;">Out of Stock</button>
                             {% endif %}
                         </div>
                     </div>
@@ -202,8 +198,6 @@
 </div>
 {# END: Related Products Section #}
 
-
-{# Custom CSS styles for this page's unique elements #}
 <style>
     /* Slider & Card Styles */
     .product-slider-area{position:relative}.product-image-slider .owl-prev,.product-image-slider .owl-next{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;background-color:rgba(255,255,255,.8);color:#2a2a2a;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:20px;transition:all .3s ease;box-shadow:0 2px 10px rgba(0,0,0,.15)}.product-image-slider .owl-prev{left:15px}.product-image-slider .owl-next{right:15px}.product-image-slider .owl-prev:hover,.product-image-slider .owl-next:hover{background-color:#70c745;color:#fff}.product-image-slider .owl-dots{text-align:center;margin-top:15px}.product-image-slider .owl-dot{width:10px;height:10px;background-color:#ddd;border-radius:50%;margin:0 5px;display:inline-block}.product-image-slider .owl-dot.active{background-color:#70c745}
@@ -214,14 +208,19 @@
 
     /* Actions Panel Styles */
     .single_product_desc .category-link { margin-top: -10px; margin-bottom: 10px; font-size: 0.9rem; }
+    .price-stock-area { margin-bottom: 20px; } .price-stock-area .price { font-size: 2rem; font-weight: 700; margin-bottom: 5px; } .stock-status span { font-weight: 600; font-size: 0.9rem; padding: 4px 10px; border-radius: 5px; color: #fff; } .stock-status .in-stock { background-color: #28a745; } .stock-status .out-of-stock { background-color: #6c757d; }
     .actions-panel { display: flex; align-items: center; width: 100%; margin-top: 20px; }
     .actions-panel .cart-form { flex-grow: 1; }
     .actions-panel .wishlist-btn { display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; border: 2px solid #ebebeb; border-radius: 8px; font-size: 1.2rem; color: #2a2a2a; transition: all 0.3s ease; }
     .actions-panel .wishlist-btn:hover { border-color: #70c745; color: #70c745; }
     .actions-panel .wishlist-btn.active { border-color: #ff4f6e; background-color: #ff4f6e; color: #fff; }
+    .quantity-selector { display: flex; align-items: center; border: 1px solid #ebebeb; border-radius: 8px; overflow: hidden; }
+    .quantity-selector .qty-btn { background-color: #f9f9f9; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; font-size: 1.2rem; line-height: 1; transition: background-color 0.3s ease; }
+    .quantity-selector .qty-btn:hover { background-color: #e0e0e0; }
+    .quantity-selector .qty-input { width: 60px; text-align: center; border: none; font-size: 1rem; font-weight: 600; -moz-appearance: textfield; }
+    .quantity-selector .qty-input::-webkit-outer-spin-button, .quantity-selector .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 </style>
 
-{# JavaScript to initialize interactive elements on the page #}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Interactive Star Rating Logic
@@ -262,8 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // AJAX Wishlist Logic
     const wishlistButtons = document.querySelectorAll('.ajax-wishlist-btn');
-    const csrfTokenInput = document.querySelector('form.cart [name=csrfmiddlewaretoken]');
-    
+    const csrfTokenInput = document.querySelector('form.cart-form [name=csrfmiddlewaretoken]'); 
     if (csrfTokenInput) {
         const csrfToken = csrfTokenInput.value; 
         wishlistButtons.forEach(button => {
@@ -273,7 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const icon = buttonElement.querySelector('i');
                 const isWishlisted = buttonElement.classList.contains('active');
                 const url = isWishlisted ? buttonElement.dataset.removeUrl : buttonElement.dataset.addUrl;
-
                 fetch(url, {
                     method: 'POST',
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRFToken': csrfToken },
@@ -287,6 +284,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 })
                 .catch(error => console.error('Wishlist Error:', error));
             });
+        });
+    }
+    
+    // Quantity Selector Logic
+    const qtyInput = document.getElementById('qty');
+    const minusBtn = document.getElementById('qty-minus');
+    const plusBtn = document.getElementById('qty-plus');
+
+    if (qtyInput && minusBtn && plusBtn) {
+        minusBtn.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value);
+            if (!isNaN(currentValue) && currentValue > 1) {
+                qtyInput.value = currentValue - 1;
+            }
+        });
+        plusBtn.addEventListener('click', function() {
+            let currentValue = parseInt(qtyInput.value);
+            const maxVal = parseInt(qtyInput.max);
+            if (!isNaN(currentValue) && currentValue < maxVal) {
+                qtyInput.value = currentValue + 1;
+            }
         });
     }
 });

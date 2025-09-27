@@ -15,6 +15,21 @@
     {# Link to favicon and the main stylesheet #}
     <link rel="icon" href="{% static 'img/core-img/favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    
+    <style>
+        .password-container {
+            position: relative;
+        }
+        .password-toggle-icon {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #777;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -211,6 +226,19 @@
     <script src="{% static 'js/plugins/plugins.js' %}"></script>
     <script src="{% static 'js/active.js' %}"></script>
     {# END: JavaScript Files #}
+
+    <script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        // Toggle the type attribute
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        // Toggle the icon
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    }
+    </script>
 
 </body>
 </html>
