@@ -63,11 +63,18 @@
                                         </a>
                                         {# START: Interactive Wishlist Icon #}
                                         <div class="wishlist-icon">
-                                            <a href="#" class="wishlist-btn ajax-wishlist-btn {% if product.id in wishlist_product_ids %}active{% endif %}" 
-                                               data-add-url="{% url 'add_to_wishlist' product.id %}"
-                                               data-remove-url="{% url 'remove_from_wishlist' product.id %}">
-                                               <i class="fa fa-heart{% if not product.id in wishlist_product_ids %}-o{% endif %}"></i>
-                                            </a>
+                                            {% if user.is_authenticated %}
+                                                <a href="#" class="wishlist-btn ajax-wishlist-btn {% if product.id in wishlist_product_ids %}active{% endif %}" 
+                                                   data-add-url="{% url 'add_to_wishlist' product.id %}"
+                                                   data-remove-url="{% url 'remove_from_wishlist' product.id %}">
+                                                   <i class="fa fa-heart{% if not product.id in wishlist_product_ids %}-o{% endif %}"></i>
+                                                </a>
+                                            {% else %}
+                                                {# If user is not logged in, link to the login page #}
+                                                <a href="{% url 'login_view' %}?next={{ request.path }}" class="wishlist-btn">
+                                                    <i class="fa fa-heart-o"></i>
+                                                </a>
+                                            {% endif %}
                                         </div>
                                         {# END: Interactive Wishlist Icon #}
                                     </div>

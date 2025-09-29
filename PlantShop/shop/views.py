@@ -287,7 +287,11 @@ def generate_invoice_pdf(request, order_id):
 
 def login_view(request):
     """Handles user login."""
+    if request.method == 'GET' and 'next' in request.GET:
+        messages.info(request, "Please log in to access that page.")
+
     if request.user.is_authenticated: return redirect('index')
+    
     if request.method == 'POST':
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '')
