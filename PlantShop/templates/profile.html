@@ -1,31 +1,24 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}My Account{% endblock title %}
+{% block title %}My Account{% endblock %}
 
 {% block main %}
-{# Main content for the Profile page starts here. #}
-
-{# START: Breadcrumb Area #}
 <div class="breadcrumb-area">
     <div class="top-breadcrumb-area bg-img bg-overlay d-flex align-items-center justify-content-center" style="background-image: url({% static 'img/bg-img/24.jpg' %});">
         <h2>My Account</h2>
     </div>
 </div>
-{# END: Breadcrumb Area #}
 
 <div class="container section-padding-100">
     <div class="row">
-        {# START: Dashboard Sidebar Navigation #}
-        {# This column holds the user's avatar and navigation links. #}
+        <!-- Dashboard Sidebar Navigation -->
         <div class="col-12 col-lg-4">
             <div class="profile-sidebar">
                 <div class="user-info">
-                    {# Displays the first letter of the user's name as an avatar #}
                     <div class="user-avatar">{{ user.full_name|first|upper }}</div>
                     <div class="user-name">Hello, {{ user.full_name }}</div>
                 </div>
-                {# The navigation links that control which content pane is visible. #}
                 <div class="list-group profile-nav">
                     <a href="#details" class="list-group-item list-group-item-action active">My Details</a>
                     <a href="#history" class="list-group-item list-group-item-action">Order History</a>
@@ -34,13 +27,10 @@
                 </div>
             </div>
         </div>
-        {# END: Dashboard Sidebar Navigation #}
 
-        {# START: Main Content Area #}
-        {# This column holds the content panes that are toggled by the sidebar. #}
+        <!-- Main Content Area -->
         <div class="col-12 col-lg-8">
             <div class="profile-content">
-                {# This block displays any success or error messages (e.g., "Profile updated!") #}
                 {% if messages %}
                     {% for message in messages %}
                     <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -50,19 +40,19 @@
                     {% endfor %}
                 {% endif %}
 
-                {# START: My Details Section #}
+                <!-- "My Details" section with NEW display/edit toggle -->
                 <div id="details" class="profile-section">
-                    {# This view is shown by default, displaying user info as text. #}
+                    <!-- This part is shown by default -->
                     <div id="details-display-view">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3 class="profile-section-title">My Details</h3>
-                            <button id="edit-details-btn" class="btn leafcart-btn btn-sm">Change Info</button>
+                            <button id="edit-details-btn" class="btn alazea-btn btn-sm">Change Info</button>
                         </div>
                         <p><strong>Full Name:</strong> {{ user.full_name }}</p>
                         <p><strong>Email:</strong> {{ user.email }}</p>
                         <p><strong>Phone:</strong> {{ user.phone }}</p>
                     </div>
-                    {# This form is hidden until the "Change Info" button is clicked. #}
+                    <!-- This form is hidden until the "Change Info" button is clicked -->
                     <div id="details-edit-form" style="display: none;">
                         <h3 class="profile-section-title mb-4">Edit Details</h3>
                         <form action="{% url 'profile_view' %}" method="post" class="profile-form">
@@ -71,15 +61,14 @@
                             <div class="form-group"><label>Email Address</label><input type="email" class="form-control" name="email" value="{{ user.email }}" required></div>
                             <div class="form-group"><label>Phone Number</label><input type="tel" class="form-control" name="phone" value="{{ user.phone }}" required></div>
                             <div class="form-group"><label>Confirm with Current Password to Save</label><input type="password" class="form-control" name="password" placeholder="Enter password to save changes" required></div>
-                            <button type="submit" class="btn leafcart-btn btn-2">Save Changes</button>
+                            <button type="submit" class="btn alazea-btn btn-2">Save Changes</button>
                             <button type="button" id="cancel-details-btn" class="btn btn-secondary ml-2">Cancel</button>
                         </form>
                     </div>
                 </div>
-                {# END: My Details Section #}
 
-                {# START: Order History Section (hidden by default) #}
-                <div id="order-history" class="profile-section" style="display: none;">
+                <!-- Order History Section -->
+                <div id="history" class="profile-section" style="display: none;">
                     <h3 class="profile-section-title">Order History</h3>
                     <div class="cart-table clearfix">
                         {% if orders %}
@@ -92,7 +81,6 @@
                                     <td>{{ order.created_at|date:"d M Y" }}</td>
                                     <td>₹{{ order.total_price|floatformat:2 }}</td>
                                     <td>
-                                        {# Dynamically sets the badge color based on order status #}
                                         {% if order.status == 'Pending' %}<span class="badge badge-warning">{{ order.status }}</span>
                                         {% elif order.status == 'Shipped' %}<span class="badge badge-info">{{ order.status }}</span>
                                         {% elif order.status == 'Delivered' %}<span class="badge badge-success">{{ order.status }}</span>
@@ -100,7 +88,6 @@
                                         {% else %}<span class="badge badge-light">{{ order.status }}</span>{% endif %}
                                     </td>
                                     <td>
-                                        {# The invoice download button only appears for delivered orders #}
                                         {% if order.status == 'Delivered' %}
                                             <a href="{% url 'generate_invoice_pdf' order.id %}" class="btn btn-sm btn-outline-success">Download Invoice</a>
                                         {% endif %}
@@ -114,44 +101,23 @@
                         {% endif %}
                     </div>
                 </div>
-                {# END: Order History Section #}
 
-                {# START: Change Password Section (hidden by default) #}
+                <!-- Change Password Section -->
                 <div id="password" class="profile-section" style="display: none;">
                     <h3 class="profile-section-title">Change Password</h3>
                     <form action="{% url 'change_password_view' %}" method="post" class="profile-form">
                         {% csrf_token %}
-                            <div class="form-group">
-                                <label>Current Password</label>
-                                <div class="password-container">
-                                    <input type="password" class="form-control" name="current_password" id="current_password" required>
-                                    <i class="fa fa-eye password-toggle-icon" id="toggleCurrentPassword" onclick="togglePasswordVisibility('current_password', 'toggleCurrentPassword')"></i>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>New Password</label>
-                                <div class="password-container">
-                                    <input type="password" class="form-control" name="new_password" id="new_password" required>
-                                    <i class="fa fa-eye password-toggle-icon" id="toggleNewPassword" onclick="togglePasswordVisibility('new_password', 'toggleNewPassword')"></i>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Confirm New Password</label>
-                                <div class="password-container">
-                                    <input type="password" class="form-control" name="confirm_password" id="confirm_password_2" required>
-                                    <i class="fa fa-eye password-toggle-icon" id="toggleConfirmPassword2" onclick="togglePasswordVisibility('confirm_password_2', 'toggleConfirmPassword2')"></i>
-                                </div>
-                            </div>
-                        <button type="submit" class="btn leafcart-btn btn-2">Change Password</button>
+                        <div class="form-group"><label>Current Password</label><input type="password" class="form-control" name="current_password" required></div>
+                        <div class="form-group"><label>New Password</label><input type="password" class="form-control" name="new_password" required></div>
+                        <div class="form-group"><label>Confirm New Password</label><input type="password" class="form-control" name="confirm_password" required></div>
+                        <button type="submit" class="btn alazea-btn btn-2">Change Password</button>
                     </form>
                 </div>
-                {# END: Change Password Section #}
             </div>
         </div>
     </div>
 </div>
 
-{# Custom CSS styles for the profile dashboard layout #}
 <style>
     .profile-sidebar { background: #f9f9f9; border-radius: 8px; padding: 25px; }
     .user-info { text-align: center; margin-bottom: 25px; border-bottom: 1px solid #ebebeb; padding-bottom: 25px; }
@@ -165,14 +131,13 @@
     .profile-form .form-group { margin-bottom: 20px; }
 </style>
 
-{# JavaScript to handle the interactive sidebar navigation and edit/view toggles #}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // --- Logic for sidebar navigation ---
     const navLinks = document.querySelectorAll('.profile-nav a.list-group-item-action');
     const sections = document.querySelectorAll('.profile-section');
     function showSection(hash) {
-        const targetHash = hash || '#details'; // Default to #details if no hash
+        const targetHash = hash || '#details';
         const targetId = targetHash.substring(1);
         sections.forEach(section => { section.style.display = (section.id === targetId) ? 'block' : 'none'; });
         navLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('href') === targetHash); });
@@ -209,6 +174,4 @@ document.addEventListener('DOMContentLoaded', function() {
     showSection(window.location.hash);
 });
 </script>
-
-{# Main content for the Profile page ends here. #}
-{% endblock main %}
+{% endblock %}

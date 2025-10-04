@@ -344,24 +344,41 @@ def logout_view(request):
 
 @login_required(login_url='login_view')
 def profile_view(request):
-    """Displays user profile and handles detail updates."""
+    """
+    Handles both displaying the profile page and updating user details.
+    """
+    # This logic now runs for both GET and POST requests, ensuring orders are always fetched.
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+
     if request.method == 'POST':
         user = request.user
         password = request.POST.get('password')
+        
+        # Build the redirect URL with a hash to reopen the details form on error
         redirect_url = f"{reverse('profile_view')}#details"
+
         if not user.check_password(password):
-            messages.error(request, 'Incorrect password.')
+            messages.error(request, 'Incorrect password. Please try again.')
             return redirect(redirect_url)
+
         new_email = request.POST.get('email')
         if User.objects.filter(email=new_email).exclude(pk=user.pk).exists():
             messages.error(request, 'An account with this email already exists.')
             return redirect(redirect_url)
-        user.full_name = request.POST.get('full_name'); user.phone = request.POST.get('phone'); user.email = new_email
+
+        # If all checks pass, update the user's details
+        user.full_name = request.POST.get('full_name')
+        user.phone = request.POST.get('phone')
+        user.email = new_email
         user.save()
-        messages.success(request, 'Your profile has been updated!')
+        
+        messages.success(request, 'Your profile has been updated successfully!')
+        # On success, redirect back to the main profile page
         return redirect('profile_view')
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    return render(request, 'profile.html', {'orders': orders})
+
+    # For a direct visit (GET request), just render the page with the order data
+    context = {'orders': orders}
+    return render(request, 'profile.html', context)
 
 
 @login_required(login_url='login_view')
@@ -418,3 +435,4 @@ def remove_from_wishlist(request, product_id):
         return JsonResponse({'status': 'success'})
     messages.success(request, f"'{product.name}' has been removed from your wishlist.")
     return redirect('view_wishlist')
+
