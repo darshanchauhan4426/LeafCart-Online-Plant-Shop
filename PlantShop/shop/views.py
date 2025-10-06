@@ -11,6 +11,9 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.staticfiles import finders
 from django.template.loader import render_to_string
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 # Third-Party Imports
 from weasyprint import HTML
@@ -271,13 +274,36 @@ def order_confirmation_view(request, order_id):
 
 @login_required(login_url='login_view')
 def generate_invoice_pdf(request, order_id):
-    """Generates a PDF invoice for a given order using WeasyPrint."""
+    """
+    Generates a PDF invoice using xhtml2pdf. This is the most reliable method
+    as it uses a full URL for the logo and a universal font.
+    """
     order = get_object_or_404(Order, id=order_id, user=request.user)
-    context = {'order': order}
-    html_string = render_to_string('invoice.html', context)
-    pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
-    response = HttpResponse(pdf_file, content_type='application/pdf')
+    template_path = 'invoice.html'
+    
+    # This creates the full URL to your logo (e.g., http://127.0.0.1:8000/static/img/core-img/logo.png)
+    logo_url = request.build_absolute_uri(staticfiles_storage.url('img/core-img/logo.png'))
+
+    context = {
+        'order': order,
+        'logo_url': logo_url, # Pass the full URL to the template
+    }
+
+    # Create a Django response object with the correct PDF content type.
+    response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="invoice_#{order.id}.pdf"'
+
+    # Find the template and render it to an HTML string.
+    template = get_template(template_path)
+    html = template.render(context)
+
+    # Create the PDF file from the HTML.
+    pisa_status = pisa.CreatePDF(
+       html, dest=response)
+    
+    # If there's an error, show an error message
+    if pisa_status.err:
+       return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
 
 
@@ -347,7 +373,7 @@ def profile_view(request):
     """
     Handles both displaying the profile page and updating user details.
     """
-    # This logic now runs for both GET and POST requests, ensuring orders are always fetched.
+    # FIX: Fetch the orders at the beginning so it happens on every request (GET or POST).
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
 
     if request.method == 'POST':
@@ -381,30 +407,39 @@ def profile_view(request):
     return render(request, 'profile.html', context)
 
 
+# In shop/views.py
+
 @login_required(login_url='login_view')
 def change_password_view(request):
-    """Handles secure password changes for logged-in users."""
     if request.method == 'POST':
         user = request.user
         current_password = request.POST.get('current_password')
         new_password = request.POST.get('new_password')
-        redirect_url = f"{reverse('profile_view')}#password"
+        
+        # FIX: The redirect URL must match the section ID in the template
+        redirect_url = f"{reverse('profile_view')}#change-password"
+
         if new_password != request.POST.get('confirm_password'):
             messages.error(request, "New passwords do not match.")
             return redirect(redirect_url)
+
         if not user.check_password(current_password):
             messages.error(request, "Your current password is not correct.")
             return redirect(redirect_url)
+        
         try:
             validate_password(new_password, user=user)
         except ValidationError as e:
             messages.error(request, ". ".join(e.messages))
             return redirect(redirect_url)
+        
         user.set_password(new_password)
         user.save()
+        
         update_session_auth_hash(request, user)
         messages.success(request, "Your password has been changed successfully.")
         return redirect('profile_view')
+    
     return redirect('profile_view')
 
 

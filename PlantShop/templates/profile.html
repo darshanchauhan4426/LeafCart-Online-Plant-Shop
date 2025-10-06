@@ -12,7 +12,6 @@
 
 <div class="container section-padding-100">
     <div class="row">
-        <!-- Dashboard Sidebar Navigation -->
         <div class="col-12 col-lg-4">
             <div class="profile-sidebar">
                 <div class="user-info">
@@ -20,15 +19,14 @@
                     <div class="user-name">Hello, {{ user.full_name }}</div>
                 </div>
                 <div class="list-group profile-nav">
-                    <a href="#details" class="list-group-item list-group-item-action active">My Details</a>
-                    <a href="#history" class="list-group-item list-group-item-action">Order History</a>
-                    <a href="#password" class="list-group-item list-group-item-action">Change Password</a>
+                    <a href="#my-details" class="list-group-item list-group-item-action">My Details</a>
+                    <a href="#order-history" class="list-group-item list-group-item-action">Order History</a>
+                    <a href="#change-password" class="list-group-item list-group-item-action">Change Password</a>
                     <a href="{% url 'logout_view' %}" class="list-group-item list-group-item-action">Logout</a>
                 </div>
             </div>
         </div>
 
-        <!-- Main Content Area -->
         <div class="col-12 col-lg-8">
             <div class="profile-content">
                 {% if messages %}
@@ -40,9 +38,7 @@
                     {% endfor %}
                 {% endif %}
 
-                <!-- "My Details" section with NEW display/edit toggle -->
-                <div id="details" class="profile-section">
-                    <!-- This part is shown by default -->
+                <div id="my-details" class="profile-section">
                     <div id="details-display-view">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h3 class="profile-section-title">My Details</h3>
@@ -52,7 +48,6 @@
                         <p><strong>Email:</strong> {{ user.email }}</p>
                         <p><strong>Phone:</strong> {{ user.phone }}</p>
                     </div>
-                    <!-- This form is hidden until the "Change Info" button is clicked -->
                     <div id="details-edit-form" style="display: none;">
                         <h3 class="profile-section-title mb-4">Edit Details</h3>
                         <form action="{% url 'profile_view' %}" method="post" class="profile-form">
@@ -60,15 +55,19 @@
                             <div class="form-group"><label>Full Name</label><input type="text" class="form-control" name="full_name" value="{{ user.full_name }}" required></div>
                             <div class="form-group"><label>Email Address</label><input type="email" class="form-control" name="email" value="{{ user.email }}" required></div>
                             <div class="form-group"><label>Phone Number</label><input type="tel" class="form-control" name="phone" value="{{ user.phone }}" required></div>
-                            <div class="form-group"><label>Confirm with Current Password to Save</label><input type="password" class="form-control" name="password" placeholder="Enter password to save changes" required></div>
+                            <div class="form-group"><label>Confirm with Current Password</label>
+                                <div class="password-container">
+                                    <input type="password" class="form-control" name="password" id="confirm_password_details" placeholder="Enter password to save changes" required>
+                                    <i class="fa fa-eye password-toggle-icon" id="toggleConfirmDetails" onclick="togglePasswordVisibility('confirm_password_details', 'toggleConfirmDetails')"></i>
+                                </div>
+                            </div>
                             <button type="submit" class="btn alazea-btn btn-2">Save Changes</button>
                             <button type="button" id="cancel-details-btn" class="btn btn-secondary ml-2">Cancel</button>
                         </form>
                     </div>
                 </div>
 
-                <!-- Order History Section -->
-                <div id="history" class="profile-section" style="display: none;">
+                <div id="order-history" class="profile-section">
                     <h3 class="profile-section-title">Order History</h3>
                     <div class="cart-table clearfix">
                         {% if orders %}
@@ -102,14 +101,28 @@
                     </div>
                 </div>
 
-                <!-- Change Password Section -->
-                <div id="password" class="profile-section" style="display: none;">
+                <div id="change-password" class="profile-section">
                     <h3 class="profile-section-title">Change Password</h3>
                     <form action="{% url 'change_password_view' %}" method="post" class="profile-form">
                         {% csrf_token %}
-                        <div class="form-group"><label>Current Password</label><input type="password" class="form-control" name="current_password" required></div>
-                        <div class="form-group"><label>New Password</label><input type="password" class="form-control" name="new_password" required></div>
-                        <div class="form-group"><label>Confirm New Password</label><input type="password" class="form-control" name="confirm_password" required></div>
+                        <div class="form-group"><label>Current Password</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" name="current_password" id="current_password" required>
+                                <i class="fa fa-eye password-toggle-icon" id="toggleCurrentPassword" onclick="togglePasswordVisibility('current_password', 'toggleCurrentPassword')"></i>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>New Password</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" name="new_password" id="new_password" required>
+                                <i class="fa fa-eye password-toggle-icon" id="toggleNewPassword" onclick="togglePasswordVisibility('new_password', 'toggleNewPassword')"></i>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Confirm New Password</label>
+                            <div class="password-container">
+                                <input type="password" class="form-control" name="confirm_password" id="confirm_password_2" required>
+                                <i class="fa fa-eye password-toggle-icon" id="toggleConfirmPassword2" onclick="togglePasswordVisibility('confirm_password_2', 'toggleConfirmPassword2')"></i>
+                            </div>
+                        </div>
                         <button type="submit" class="btn alazea-btn btn-2">Change Password</button>
                     </form>
                 </div>
@@ -129,19 +142,29 @@
     .profile-content { background: #ffffff; border: 1px solid #ebebeb; border-radius: 8px; padding: 30px; }
     .profile-section-title { font-size: 1.75rem; font-weight: 600; margin-bottom: 25px; }
     .profile-form .form-group { margin-bottom: 20px; }
+    .password-container { position: relative; }
+    .password-toggle-icon { position: absolute; top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer; color: #777; }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // --- Logic for sidebar navigation ---
     const navLinks = document.querySelectorAll('.profile-nav a.list-group-item-action');
     const sections = document.querySelectorAll('.profile-section');
+
     function showSection(hash) {
-        const targetHash = hash || '#details';
+        // The default section is #my-details
+        const targetHash = hash || '#my-details';
         const targetId = targetHash.substring(1);
-        sections.forEach(section => { section.style.display = (section.id === targetId) ? 'block' : 'none'; });
-        navLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('href') === targetHash); });
+
+        sections.forEach(section => {
+            section.style.display = (section.id === targetId) ? 'block' : 'none';
+        });
+
+        navLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === targetHash);
+        });
     }
+
     navLinks.forEach(link => {
         link.addEventListener('click', function(event) {
             if (this.getAttribute('href').startsWith('#')) {
@@ -153,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // --- Logic for toggling the details form ---
     const detailsDisplay = document.getElementById('details-display-view');
     const detailsForm = document.getElementById('details-edit-form');
     const editButton = document.getElementById('edit-details-btn');
@@ -173,5 +195,15 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('popstate', () => showSection(window.location.hash));
     showSection(window.location.hash);
 });
+
+// This function is in base.html but is copied here for completeness
+function togglePasswordVisibility(inputId, iconId) {
+    const passwordInput = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordInput.setAttribute('type', type);
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+}
 </script>
 {% endblock %}
