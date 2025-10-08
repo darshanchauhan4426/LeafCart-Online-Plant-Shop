@@ -1,112 +1,101 @@
-﻿# Online-Plant-Shop
-
-LeafCart - Full-Stack E-commerce Plant Shop
+﻿LeafCart - A Full-Stack E-commerce Plant Shop
 LeafCart is a complete, full-stack e-commerce web application built from the ground up using Python and Django. This project is a professional online store for selling plants, featuring a complete customer journey from browsing and searching for products to a secure checkout process and post-purchase order management.
 
+Project Repository: https://github.com/darshanchauhan4426/Online-Plant-Shop
+
 Features
-This project is built with a wide range of professional features expected from a modern e-commerce website.
+LeafCart is a full-featured application that includes:
 
-User & Account Features
-User Authentication: Complete registration, login, and logout system with a custom User model.
+User & Account Management
+Custom User Model: Secure user system using email for authentication.
 
-Password Validation: Secure password validation to enforce strong passwords.
+Full Authentication: Complete user registration, login, and logout functionality.
 
-Professional User Dashboard: A dedicated profile page where users can:
+Password Security: Strong password validation and a "Forgot Password" feature that sends a secure reset link via email.
 
-Update their personal details (name, email, phone) with password confirmation.
+Professional User Dashboard: A dedicated profile page where users can update their personal details (with password confirmation) and change their password.
 
-Change their password securely.
+E-commerce & Shopping
+Dynamic Product Catalog: A multi-image gallery for each product, with details like price, stock status, and average customer rating.
 
-View their complete order history with dynamic status badges.
+Advanced Shop Page: A professional shop interface with:
 
-Download PDF invoices for completed orders.
+Filtering: Filter products by category.
 
-E-commerce & Shopping Features
-Dynamic Product Catalog: A multi-image product gallery system with a clean, modern card layout.
+Searching: A search bar that queries product names and descriptions.
 
-Advanced Filtering & Sorting:
+Sorting: Sort products by price, name, or availability.
 
-Filter products by category.
+Pagination: A clean pagination system that works with all active filters.
 
-Search products by keywords in their name or description.
+Stock Management: The system tracks inventory, displays "Out of Stock" messages, and automatically decrements stock after a purchase.
 
-Sort products by price (low to high, high to low) and name (A-Z).
+Shopping Cart: A fully functional shopping cart with the ability to update quantities and remove items.
 
-Stock Management: Products are displayed as "Out of Stock" when their inventory reaches zero, and stock is automatically deducted after a purchase.
+Interactive Wishlist: An AJAX-powered wishlist that allows users to add or remove items without reloading the page.
 
-Shopping Cart: A fully functional shopping cart that supports quantity updates.
-
-Interactive Wishlist: An AJAX-powered wishlist that allows users to add or remove items without a page reload.
-
-Discount / Coupon System: The ability for admins to create coupon codes that apply a percentage discount in the cart.
+Coupon System: A discount code system that allows the administrator to create coupons that apply a percentage-based discount to the cart total.
 
 Post-Purchase Features
-Cash on Delivery Checkout: A complete checkout process optimized for "Cash on Delivery" payments.
+Order History: The user dashboard displays a complete history of all past orders with their status.
 
-PDF Invoice Generation: Automatically generates a professional, downloadable PDF invoice for every completed order using the WeasyPrint library.
+PDF Invoice Generation: Users can download a professional, dynamically generated PDF invoice for any order that has been marked as "Delivered".
 
-Bestseller System: An admin-controlled feature to mark products as "bestsellers" to be featured in the site's footer.
+Tech Stack
+This project was built using the following technologies:
 
-Technology Stack
 Backend: Python, Django
 
-Frontend: HTML5, CSS3, JavaScript
+Frontend: HTML5, CSS3, JavaScript, Bootstrap (from the Alazea/LeafCart theme)
 
 Database: SQLite3 (for development)
 
-PDF Generation: WeasyPrint
+Key Python Libraries:
 
-Styling: Custom CSS, based on the Alazea theme structure
+xhtml2pdf: For generating PDF invoices from HTML templates.
 
-Local Setup & Installation
-To run this project on your local machine, follow these steps:
+python-dotenv: For securely managing environment variables.
 
-1. Clone the Repository:
+email_validator: For advanced email validation on the registration form.
 
-git clone [https://github.com/your-username/leafcart.git](https://github.com/your-username/leafcart.git)
-cd leafcart
+Setup & Installation
+To run this project locally, follow these steps:
 
-2. Create and Activate a Virtual Environment:
+1. Clone the Repository
 
-# For Windows
+git clone [https://github.com/darshanchauhan4426/Online-Plant-Shop.git](https://github.com/darshanchauhan4426/Online-Plant-Shop.git)
+cd Online-Plant-Shop
+
+2. Create and Activate a Virtual Environment
+
+# Create the environment
 python -m venv venv
+
+# Activate it (on Windows)
 venv\Scripts\activate
 
-# For macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-
-3. Install Dependencies:
+3. Install Dependencies
 This project uses a requirements.txt file to manage its dependencies.
 
 pip install -r requirements.txt
 
-(Note: If you are on Windows, you may need to install GTK3 for WeasyPrint to work correctly.)
+4. Create a .env File
+In the root directory of the project, create a file named .env and add your secret keys and email credentials:
 
-4. Run Database Migrations:
-This will set up your local SQLite database.
+SECRET_KEY=your_django_secret_key_goes_here
+EMAIL_HOST_USER=your_email@gmail.com
+EMAIL_HOST_PASSWORD=your_16_digit_google_app_password
 
-python manage.py makemigrations
+5. Set Up the Database
+Run the migrations to create the database tables.
+
 python manage.py migrate
 
-5. Create an Admin Superuser:
-This will allow you to log in to the Django admin panel.
+6. Create an Admin Superuser
+You will need an admin account to manage products, categories, and orders.
 
 python manage.py createsuperuser
 
-Follow the prompts to create your username and password.
-
-6. Run the Development Server:
+7. Run the Development Server
 
 python manage.py runserver
-
-The project will now be running at http://127.0.0.1:8000/. You can log in to the admin panel at http://127.0.0.1:8000/admin/.
-
-Important Next Step: Create a requirements.txt file
-Before you upload your project to GitHub, you need to create a file that lists all the packages you've installed (like Django and WeasyPrint).
-
-In your terminal (with your virtual environment activated), run this command in your project's root folder:
-
-pip freeze > requirements.txt
-
-This will create the requirements.txt file automatically, making it easy for others (and you) to set up the project in the future.
