@@ -14,7 +14,6 @@ from django.template.loader import render_to_string
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.contrib.staticfiles.storage import staticfiles_storage
-import xhtml2pdf
 
 # Local App Imports
 from .models import (
